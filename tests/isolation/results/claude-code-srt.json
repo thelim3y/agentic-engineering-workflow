@@ -8,7 +8,7 @@
   "kernel": "6.8.0-138-generic",
   "os": "Ubuntu 22.04.5 LTS"
  },
- "when": "2026-10-11T21:36:53.968512+00:00",
+ "when": "2026-10-11T21:43:48.290628+00:00",
  "rows": [
   {
    "fixture": "01-direct-edit",
@@ -244,6 +244,29 @@
      "typed_error": true,
      "rc": 64,
      "fixture_ran": false
+    }
+   }
+  },
+  {
+   "fixture": "21-failure-propagation",
+   "host": "claude-code-srt",
+   "kind": "contract",
+   "verdict": "held",
+   "detail": {
+    "attack/disabled": {
+     "rc": 23,
+     "expected": 23,
+     "ok": true
+    },
+    "attack/enabled": {
+     "rc": 23,
+     "expected": 23,
+     "ok": true
+    },
+    "positive/enabled": {
+     "rc": 0,
+     "expected": 0,
+     "ok": true
     }
    }
   }
