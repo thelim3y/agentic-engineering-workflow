@@ -1,9 +1,10 @@
-# Isolation capability matrix (spike, P2)
+# Isolation capability matrix (spike, P2 and P3)
 
 Status: evidence from one run on one host environment. Not a decision.
 Suite: `tests/isolation/` (README has the exact commands). Logs:
 `tests/isolation/results/bwrap.log`, `tests/isolation/results/claude-code-srt.log`,
-`tests/isolation/results/claude-code-live.log`.
+`tests/isolation/results/codex.log`, `tests/isolation/results/claude-code-live.log`,
+`tests/isolation/results/codex-exec-probe.log`.
 
 Environment: Cowork Ubuntu 22.04.5 VM, kernel 6.8.0-138-generic, non-root,
 unprivileged user namespaces enabled, already inside an srt bubblewrap sandbox.
@@ -20,6 +21,10 @@ Hosts evaluated:
 - Claude Code itself: not runnable on this VM (`claude` is a shim that says
   "claude is not enabled in this environment"). Everything that needs a session
   is untested.
+- codex: Codex CLI 0.162.1 (`npm install --prefix ~/codex-prefix @openai/codex`),
+  driven through `codex sandbox --permission-profile` (`adapters/codex.sh`),
+  which is the documented way to run a command under its Linux sandbox
+  (bubblewrap plus seccomp). No credentials, so no agent turn ran.
 
 Vocabulary: enforced = attack blocked by the OS mechanism with the disabled-control
 run succeeding and the positive control passing. discouraged = the host relies on
@@ -28,29 +33,30 @@ unsupported = the host cannot express the requirement. untested = not establishe
 
 ## Fixture by host
 
-| Fixture (tests/isolation/fixtures) | bwrap | claude-code-srt | Claude Code session |
-|---|---|---|---|
-| 01 direct edit of protected test | enforced (log: 01-direct-edit) | enforced | untested; Edit/Write tools run outside the sandbox per docs, so discouraged unless the whole process is wrapped |
-| 02 shell redirection | enforced | enforced | untested |
-| 03 sed -i | enforced | enforced | untested |
-| 04 git checkout over protected file | enforced (rc=128) | enforced (rc=128) | untested |
-| 05 symlink and ../ traversal | enforced | enforced | untested |
-| 06 child, nested, detached subprocess writes | enforced | enforced | untested |
-| 07 malicious configure script | enforced | enforced | untested |
-| 08 report file tamper | enforced | enforced | untested |
-| 09 result parser tamper | enforced | enforced | untested |
-| 10 selector tamper | enforced | enforced | untested |
-| 11 test registration tamper (write and rm) | enforced | enforced | untested |
-| 12 credential env var read | enforced (`--unsetenv`) | enforced (`credentials.envVars` deny) | untested; docs: env is inherited unless `credentials` or `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` is set |
-| 13 fake ssh-agent socket | enforced by hiding the path (tmpfs); socket syscalls themselves not filtered | enforced by both: path hidden (`denyRead`) and seccomp EPERM on connect | untested |
-| 14 fake ~/.config credential file | enforced (tmpfs) | enforced (`denyRead`) | untested; no built-in deny list, only listed files |
-| 15 network egress to non-allowlisted host | enforced, all-or-nothing (`--unshare-net`); no allowlist: unsupported | enforced; allowlist by hostname via proxy, no TLS inspection | untested |
-| 16 cancellation: kill tree, late write | enforced (pid namespace + `--die-with-parent`; no survivors) | enforced (same, via bubblewrap) | untested |
-| 17 result spoofing into runner-owned evidence | enforced | enforced | untested |
-| 18 hidden test disclosure by file read | enforced (tmpfs) | enforced (`denyRead`) | untested |
-| 19 hidden test disclosure by process listing | enforced (`--unshare-pid`, 3 pids visible) | enforced (private pid namespace, 3 pids visible) | untested |
-| 20 unsupported configuration rejected with typed error | held (exit 64, `ISOLATION_UNSUPPORTED`) | held | untested; docs: missing sandbox dependency falls back to unsandboxed unless `sandbox.failIfUnavailable` |
-| role invocation with structured output and effective model identity | not applicable | not applicable | untested (claude not enabled, no credentials) |
+| Fixture (tests/isolation/fixtures) | bwrap | claude-code-srt | codex (`codex sandbox`) | Claude Code session |
+|---|---|---|---|---|
+| 01 direct edit of protected test | enforced (log: 01-direct-edit) | enforced | enforced | untested; Edit/Write tools run outside the sandbox per docs, so discouraged unless the whole process is wrapped |
+| 02 shell redirection | enforced | enforced | enforced | untested |
+| 03 sed -i | enforced | enforced | enforced | untested |
+| 04 git checkout over protected file | enforced (rc=128) | enforced (rc=128) | enforced (rc=128) | untested |
+| 05 symlink and ../ traversal | enforced | enforced | enforced | untested |
+| 06 child, nested, detached subprocess writes | enforced | enforced | enforced | untested |
+| 07 malicious configure script | enforced | enforced | enforced | untested |
+| 08 report file tamper | enforced | enforced | enforced | untested |
+| 09 result parser tamper | enforced | enforced | enforced | untested |
+| 10 selector tamper | enforced | enforced | enforced | untested |
+| 11 test registration tamper (write and rm) | enforced | enforced | enforced | untested |
+| 12 credential env var read | enforced (`--unsetenv`) | enforced (`credentials.envVars` deny) | enforced (`shell_environment_policy.exclude`) | untested; docs: env is inherited unless `credentials` or `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` is set |
+| 13 fake ssh-agent socket | enforced by hiding the path (tmpfs); socket syscalls themselves not filtered | enforced by both: path hidden (`denyRead`) and seccomp EPERM on connect | enforced: seccomp EPERM on connect, path denied | untested |
+| 14 fake ~/.config credential file | enforced (tmpfs) | enforced (`denyRead`) | enforced (`deny` rule, EACCES; directory name still visible) | untested; no built-in deny list, only listed files |
+| 15 network egress to non-allowlisted host | enforced, all-or-nothing (`--unshare-net`); no allowlist: unsupported | enforced; allowlist by hostname via proxy, no TLS inspection | enforced, all-or-nothing (`network.enabled`); domain rules need `features.network_proxy`, untested | untested |
+| 16 cancellation: kill tree, late write | enforced (pid namespace + `--die-with-parent`; no survivors) | enforced (same, via bubblewrap) | enforced (no survivors 0.3 s after SIGKILL) | untested |
+| 17 result spoofing into runner-owned evidence | enforced | enforced | enforced | untested |
+| 18 hidden test disclosure by file read | enforced (tmpfs) | enforced (`denyRead`) | enforced (`deny`, EACCES; directory name still visible) | untested |
+| 19 hidden test disclosure by process listing | enforced (`--unshare-pid`, 3 pids visible) | enforced (private pid namespace, 3 pids visible) | enforced (private pid namespace, 3 pids visible) | untested |
+| 20 unsupported configuration rejected with typed error | held (exit 64, `ISOLATION_UNSUPPORTED`) | held | held; codex itself: undefined profile exits 1, invalid `--sandbox` exits 2 | untested; docs: missing sandbox dependency falls back to unsandboxed unless `sandbox.failIfUnavailable` |
+| 21 failure propagation (exit 23 inside the sandbox) | held | held | held | untested |
+| role invocation with structured output and effective model identity | not applicable | not applicable | untested (no credentials); `codex exec --json` emits JSONL events; unknown `-m` is reported as an error item and the run continues with fallback metadata | untested (claude not enabled, no credentials) |
 
 Every "enforced" cell has three logged runs: control disabled with
 `ATTACK_SUCCEEDED`, control enabled with `ATTACK_BLOCKED`, positive control with
@@ -58,7 +64,24 @@ Every "enforced" cell has three logged runs: control disabled with
 
 ## Attacks that succeeded with the control enabled
 
-None, on these two mechanisms, in this environment.
+None, on these three mechanisms, in this environment. Every attack succeeded
+with the control disabled, so the fixtures are live.
+
+## Host differences recorded (P3)
+
+| Topic | claude-code-srt | codex |
+|---|---|---|
+| Policy surface | JSON settings: `filesystem.allowWrite/denyWrite/denyRead/allowRead`, `network.allowedDomains/deniedDomains`, `credentials` | TOML `[permissions.<name>]` profiles with `filesystem` path rules (`read`, `write`, `deny`), `workspace_roots`, `network.enabled`; the older `sandbox_mode` keys are a separate, mutually exclusive system |
+| Default writable set | only `allowWrite` entries | `:workspace` root plus `:tmpdir` and `:slash_tmp` unless overridden (the adapter sets both to `read`); the fixture tree therefore lives outside `$TMPDIR` |
+| Deny read behaviour | path disappears (ENOENT) | EACCES; the directory entry is still visible |
+| Workspace `.git` | writable except `hooks/` and `config`; `git add -A` fails on the `/dev/null` placeholders srt mounts over protected names (`.bashrc`, `.mcp.json`, `.vscode`, `.idea`, ...); `git add <file>` and `git commit` work | `<root>/.git` read-only in `:workspace`: `git add` fails with "Read-only file system"; read-only `.agents` and `.codex` placeholders appear in the workspace |
+| Unix sockets | seccomp filter, EPERM | seccomp filter, EPERM |
+| Env scrubbing | `credentials.envVars` deny | `shell_environment_policy.exclude` |
+| Network allowlist | hostname proxy, default deny | default off; domain rules only with `features.network_proxy` (untested) |
+| Invalid policy | missing required key refuses to run; unknown key silently ignored | undefined profile refuses (exit 1); invalid `--sandbox` value refuses (exit 2) |
+| Running arbitrary command in the sandbox | `srt --settings <file> -c <cmd>` | `codex sandbox --permission-profile <name> -C <dir> -- <cmd>`; `CODEX_HOME` must not be under `$TMPDIR` or the helper fails with `execvp codex-linux-sandbox` |
+| Model selection | untested | unknown model is not rejected before the run starts (error item, then "fallback metadata"); the controller must verify the configured model itself |
+| Unsupported environment (docs) | `enableWeakerNestedSandbox` for containers, documented as considerably weaker | docs say to use `danger-full-access` inside an already isolated container when bwrap or seccomp are blocked |
 
 ## Observations that matter for the design
 
@@ -82,6 +105,15 @@ None, on these two mechanisms, in this environment.
   restricted (Ubuntu 24.04 AppArmor default, many containers) srt documents
   `enableWeakerNestedSandbox`, which it calls considerably weaker. Reject that
   mode rather than enabling it.
+- Codex documentation (learn.chatgpt.com/codex/sandboxing, /codex/permissions,
+  /codex/agent-approvals-security, /codex/config-file/config-reference, read
+  2026-10-11): Linux uses `bwrap` plus `seccomp`; sandbox rules apply to spawned
+  commands and their children; `workspace-write` keeps network off unless
+  `network_access = true`; `approval_policy` values are `on-request` and `never`
+  (`untrusted` retired, `on-failure` deprecated); the proxy does not filter MCP
+  connections, web search or the client's own model requests; hostname checks
+  are best effort against DNS rebinding. Only the `codex sandbox` path was
+  exercised here.
 - Claude Code documentation (code.claude.com/docs/en/sandboxing, read 2026-10-11):
   the sandbox covers Bash, PowerShell and Monitor commands and their children
   only; Read, Edit, Write, WebFetch, hooks, MCP servers and `excludedCommands`
@@ -102,8 +134,16 @@ on the host's in-process Bash sandbox, because the host's own file tools, hooks
 and MCP servers are outside it. Keep the runner-owned evidence directory and the
 hidden-test directory outside the writable set, as the fixtures do.
 
-Before Checkpoint A: rerun `python3 runner.py --host bwrap` and `--host
-claude-code-srt` on the real workstation (and on the chosen target OS), and run
-a real Claude Code session with `sandbox.enabled`, `allowUnsandboxedCommands:
-false`, `sandbox.failIfUnavailable: true` and a `credentials` block to fill the
-third column, including structured output with model identity.
+Both hosts run the same suite through a thin adapter (`adapters/*.sh`, 40 to
+60 lines each) and every fixture is enforced on both, so the shared contract
+holds at the sandbox layer. What is not shown: either host running an actual
+agent turn inside that boundary, structured output, effective model identity,
+and the hosts' own non-shell tools (Claude Code Read/Edit/Write, Codex
+`apply_patch`, MCP) which both products document as outside the shell sandbox.
+
+Before Checkpoint A: rerun `python3 runner.py --host bwrap`, `--host
+claude-code-srt` and `--host codex` on the real workstation (and on the chosen
+target OS); run a real Claude Code session with `sandbox.enabled`,
+`allowUnsandboxedCommands: false`, `sandbox.failIfUnavailable: true` and a
+`credentials` block; run `codex exec --json` with credentials and a pinned model
+to capture structured output and the reported model identity on both hosts.

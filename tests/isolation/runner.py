@@ -24,7 +24,7 @@ RUN_ROOT = Path(os.environ.get("ISO_RUN_ROOT", str(Path.home() / "iso-runs")))
 NET_HOST = os.environ.get("ISO_NET_HOST", "github.com")
 EXIT_UNSUPPORTED = 64
 CANCEL_FIXTURES = {"16-cancellation"}
-CONTRACT_FIXTURES = {"20-unsupported-config"}
+CONTRACT_FIXTURES = {"20-unsupported-config", "21-failure-propagation"}
 
 GIT_ENV = {"GIT_AUTHOR_NAME": "spike", "GIT_AUTHOR_EMAIL": "spike@example.invalid",
            "GIT_COMMITTER_NAME": "spike", "GIT_COMMITTER_EMAIL": "spike@example.invalid",
@@ -179,7 +179,17 @@ class Runner:
         self.log(f"===== {name} on {self.host} at {datetime.now(timezone.utc).isoformat()}")
         row = {"fixture": name, "host": self.host}
         try:
-            if name in CONTRACT_FIXTURES:
+            if name == "21-failure-propagation":
+                res = {}
+                for control, phase, want in (("disabled", "attack", 23), ("enabled", "attack", 23), ("enabled", "positive", 0)):
+                    e = Env(f"{self.host}-{name}-{control}-{phase}")
+                    try:
+                        r = self.run_phase(e, fixture, phase, control)
+                        res[f"{phase}/{control}"] = {"rc": r["rc"], "expected": want, "ok": r["rc"] == want}
+                    finally:
+                        e.close(); self.cleanup(e)
+                row.update({"kind": "contract", "verdict": "held" if all(v["ok"] for v in res.values()) else "violated", "detail": res})
+            elif name in CONTRACT_FIXTURES:
                 res = {}
                 for label, kw in (("require-tls-inspection", {"require": "tls-inspection"}), ("net-bogus", {"net": "bogus"})):
                     for control in ("enabled", "disabled"):

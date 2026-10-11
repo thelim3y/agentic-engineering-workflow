@@ -34,6 +34,10 @@ values or process state; fixture stdout is logged but never trusted.
   - `bwrap.sh`: bubblewrap directly (OS-level mechanism).
   - `claude-code-srt.sh`: `@anthropic-ai/sandbox-runtime` (`srt`), the package
     Claude Code's `sandbox.enabled` setting uses on Linux.
+  - `codex.sh`: `codex sandbox --permission-profile` with a generated
+    per-run `CODEX_HOME/config.toml` (Codex CLI 0.162.1, installed with
+    `npm install --prefix ~/codex-prefix @openai/codex`, no sudo). Set
+    `CODEX_BIN` if codex is elsewhere.
 - `fixtures/NN-name.sh`: host-agnostic. Phases `attack`, `positive` run inside
   the sandbox; `judge_attack`, `judge_positive` run outside. `fixtures/lib.sh`
   holds shared helpers.
@@ -51,13 +55,40 @@ Egress: every run uses the same host (`github.com`, reachable from this VM) so
 the VM's own egress allowlist is constant; only the sandbox policy differs
 between run (b) `ISO_NET=deny` and run (c) `ISO_NET=allow`.
 
+Fixtures 20 and 21 are contract fixtures rather than attacks: 20 checks that an
+unsupported policy (`ISO_REQUIRE=tls-inspection`, then `ISO_NET=bogus`) is
+rejected with exit 64 and `ISOLATION_UNSUPPORTED` before anything runs; 21
+checks that a command exiting 23 inside the sandbox reaches the runner as 23.
+
 ## Commands run (2026-10-11, Cowork Ubuntu 22.04.5 VM, kernel 6.8.0-138-generic)
 
 ```
 cd tests/isolation
 python3 runner.py --host bwrap
 python3 runner.py --host claude-code-srt
+python3 runner.py --host codex
 ```
+
+Codex install and probes (recorded in `results/codex-exec-probe.log`):
+
+```
+npm install --prefix ~/codex-prefix --no-audit --no-fund @openai/codex
+~/codex-prefix/node_modules/.bin/codex --version
+~/codex-prefix/node_modules/.bin/codex exec --json --skip-git-repo-check "Reply with the single word OK"
+~/codex-prefix/node_modules/.bin/codex exec --json --skip-git-repo-check -m definitely-not-a-model-xyz "Reply with the single word OK"
+~/codex-prefix/node_modules/.bin/codex exec --json --skip-git-repo-check --sandbox not-a-mode "Reply with the single word OK"
+~/codex-prefix/node_modules/.bin/codex sandbox --permission-profile does-not-exist -C <dir> -- true
+~/codex-prefix/node_modules/.bin/codex sandbox --permission-profile spike-ws -C <dir> -- sh -c 'exit 23'
+~/codex-prefix/node_modules/.bin/codex login status
+```
+
+No Codex credentials exist here and the VM proxy refuses api.openai.com, so
+`codex exec` never completed a turn: live structured output and effective model
+identity are untested (no credentials). What the probe does show: `--json`
+emits JSONL events (`thread.started`, `turn.started`, `item.completed`), an
+unknown `-m` value is reported as an error item but the run proceeds with
+"fallback metadata" rather than stopping, an invalid `--sandbox` value exits 2,
+an undefined permission profile exits 1, and exit codes propagate.
 
 Attempt at a live Claude Code role invocation (recorded in
 `results/claude-code-live.log`):
@@ -88,6 +119,9 @@ docker, podman, firejail, cmake, clang.
   (Read, Edit, Write), hooks and MCP servers run outside it by design (official
   docs, "What runs outside the sandbox"). Nothing here tests those tools.
 - cmake is absent; the configure-time attack is a shell script run as a build step.
+- Codex was driven through `codex sandbox`, which applies the same profile the
+  agent's shell tool gets, not through an agent turn. Codex's own file edits
+  (`apply_patch`) and MCP calls are outside what was tested.
 - The runner's "late write rejected" property is runner policy (outputs of a
   cancelled run are never accepted). The sandbox contributes termination of the
   whole tree, which is what the fixture measures.
