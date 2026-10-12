@@ -28,6 +28,7 @@ shared agent entry point. Planned work lives in
 | [Retrieval](retrieval.md) | Scoped and versioned supporting context. |
 | [Learning](learning.md) | Human-approved lessons and task feedback. |
 | [Configuration](configuration.md) | Precedence, policy, validation, and invariants. |
+| [Standards](standards.md) | Relevant standards, claim boundaries, and alignment direction. |
 | [Setup](setup-guide.md) | Host onboarding and C++ tool selection. |
 | [Build plan](build-plan.md) | Delivery order and feasibility gates. |
 | [ADR-0001](decisions/0001-trusted-workflow-boundaries.md) | Why trusted control is separate from agents. |
