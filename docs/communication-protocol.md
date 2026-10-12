@@ -24,6 +24,7 @@ invocation and role. A role name in YAML is not authentication.
 | Gate decision | Gate ID, outcome, rule/configuration identity, evidence references, reasons, coverage and unresolved work. | Controller evaluates current records. |
 | Approval | Proposal/action identity and content, scope, dependency identities, authenticated human identity, decision, timestamp and optional reason. | Human decision recorded by controller. |
 | External operation | Stable intent ID, payload identity, target, owner generation, authorization/evidence references, dispatch attempt, state and provider receipt. | Trusted integration; recovery rules apply. |
+| Observation | Stable namespaced observation name, source, concise message, optional structured details and references. | Informational only; cannot advance a gate or override a defined record. |
 
 An input bundle identifies task, plan, applicable policy, effective configuration,
 source/base snapshot, test/verification manifest, dependencies and relevant environment.
@@ -73,6 +74,8 @@ evidence as fresh. Free-form notes cannot override structured fields or policy.
 
 Unknown schema versions fail explicitly. Define migrations and conformance fixtures
 before evolving the wire format; optional extensions cannot redefine existing meaning.
+Readers preserve and display unknown event names in a known envelope, but do not use
+them for control decisions unless a configured extension defines their semantics.
 Adapters must preserve provenance and unsupported/unknown outcomes.
 
 All explanations remain concise. Full evidence lives in protected artifacts rather
