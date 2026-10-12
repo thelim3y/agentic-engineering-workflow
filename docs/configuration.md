@@ -34,6 +34,10 @@ review is one round before escalation. Other numeric defaults remain explicit ch
 
 ## Fixed invariants
 
+No configuration schema or workflow transition may require a named runner,
+provider, model, CLI, or SDK. Adapters declare capabilities; policy declares the
+capabilities it needs.
+
 Configuration cannot grant implementation test-writing access, let agents approve
 their own guidance, turn absent required evidence into a pass, bypass repository
 protections, disable required audit, or give stale owners authority. Test visibility

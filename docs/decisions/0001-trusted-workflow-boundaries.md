@@ -31,10 +31,10 @@ and OS support remain open and require separate decisions and proof.
 
 ## Consequences
 
-The plugin remains the user-facing entry point. A small controller can own multiple
-logical contracts; no distributed-service architecture is required. Each host must
-pass the same enforcement and recovery tests. Unsupported configurations fail closed.
-More capable models do not remove these authority boundaries.
+A host integration remains the user-facing entry point. A small controller can own
+multiple logical contracts; no distributed-service architecture is required. Each
+runner adapter must pass the same enforcement and recovery tests. Unsupported
+configurations fail closed. More capable models do not remove these boundaries.
 
 The contract is specified in [execution](../execution.md),
 [records](../communication-protocol.md), [recovery](../checkpoints.md) and
