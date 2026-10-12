@@ -16,6 +16,8 @@ from .events_v1 import AuditErrorV1, EventV1, ReceiptV1, VerificationV1, canonic
 
 _ZERO = "0" * 64
 _FLAGS = os.O_CLOEXEC | os.O_NOFOLLOW
+_HEAD_FIELDS = set("schema_version count byte_count head run_ids pending".split())
+_ROW_FIELDS = set("sequence previous event digest".split())
 
 
 def _fail(code, message):
@@ -29,6 +31,11 @@ def _integrity():
     )
 
 
+def _require_integrity(condition):
+    if not condition:
+        _integrity()
+
+
 def _digest(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -40,6 +47,14 @@ def _write_all(fd, data):
         if count == 0:
             raise OSError(errno.EIO, "No write progress")
         remaining = remaining[count:]
+
+
+@contextmanager
+def _close_fd(fd):
+    try:
+        yield fd
+    finally:
+        os.close(fd)
 
 
 def _io_error(error, context):
@@ -98,8 +113,7 @@ class FileAuditV1:
         return value
 
     def _check_location(self):
-        # No symlink component, including one above the store. Non-sticky writable
-        # ancestors would allow another OS user to replace the directory.
+        # Reject symlink components and replaceable non-sticky ancestors.
         try:
             resolved = self.path.resolve()
         except (ValueError, RuntimeError):
@@ -144,10 +158,8 @@ class FileAuditV1:
                     fd = os.open(
                         name, _FLAGS | os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600, dir_fd=directory
                     )
-                    try:
+                    with _close_fd(fd):
                         os.fsync(fd)
-                    finally:
-                        os.close(fd)
                 provider._publish_head(
                     directory,
                     {
@@ -159,11 +171,10 @@ class FileAuditV1:
                         "pending": None,
                     },
                 )
-            parent = os.open(provider.path.parent, _FLAGS | os.O_RDONLY | os.O_DIRECTORY)
-            try:
+            with _close_fd(
+                os.open(provider.path.parent, _FLAGS | os.O_RDONLY | os.O_DIRECTORY)
+            ) as parent:
                 os.fsync(parent)
-            finally:
-                os.close(parent)
         except OSError as error:
             raise _io_error(error, context) from None
         return provider
@@ -171,21 +182,15 @@ class FileAuditV1:
     @contextmanager
     def _directory(self):
         self._check_location()
-        fd = os.open(self.path, _FLAGS | os.O_RDONLY | os.O_DIRECTORY)
-        try:
+        with _close_fd(os.open(self.path, _FLAGS | os.O_RDONLY | os.O_DIRECTORY)) as fd:
             self._check_owner(fd, directory=True)
             yield fd
-        finally:
-            os.close(fd)
 
     @contextmanager
     def _file(self, directory, name, flags=os.O_RDONLY):
-        fd = os.open(name, _FLAGS | flags | os.O_NONBLOCK, dir_fd=directory)
-        try:
+        with _close_fd(os.open(name, _FLAGS | flags | os.O_NONBLOCK, dir_fd=directory)) as fd:
             self._check_owner(fd)
             yield fd
-        finally:
-            os.close(fd)
 
     @contextmanager
     def _session(self, context):
@@ -211,92 +216,161 @@ class FileAuditV1:
         with self._file(directory, name) as fd, os.fdopen(os.dup(fd), "rb") as stream:
             return stream.read()
 
+    def _fsync_file(self, directory, name, flags=os.O_RDONLY):
+        with self._file(directory, name, flags) as fd:
+            os.fsync(fd)
+
     def _publish_head(self, directory, head):
         name = ".head-" + uuid4().hex
-        fd = os.open(name, _FLAGS | os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600, dir_fd=directory)
-        try:
+        flags = _FLAGS | os.O_WRONLY | os.O_CREAT | os.O_EXCL
+        with _close_fd(os.open(name, flags, 0o600, dir_fd=directory)) as fd:
             _write_all(fd, canonical_json(head) + b"\n")
             os.fsync(fd)
-        finally:
-            os.close(fd)
-            # Failed or killed writes may leave temporary heads. They are never
-            # authoritative; no automatic repair or selection by modification time.
+        # Failed writes may leave temporary heads. They are never authoritative.
         os.replace(name, "head.json", src_dir_fd=directory, dst_dir_fd=directory)
         os.fsync(directory)
 
+    def _read_head(self, directory):
+        head = json.loads(self._read_file(directory, "head.json"))
+        _require_integrity(type(head) is dict)
+        if type(head.get("schema_version")) is not int or head["schema_version"] != 1:
+            _fail("unsupported_version", "Only file audit format v1 is supported.")
+        _require_integrity(set(head) == _HEAD_FIELDS)
+        _require_integrity(
+            all(type(head[name]) is int and head[name] >= 0 for name in ("count", "byte_count"))
+        )
+        return head
+
+    @staticmethod
+    def _decode_row(line, sequence, previous):
+        row = json.loads(line)
+        _require_integrity(type(row) is dict and set(row) == _ROW_FIELDS)
+        _require_integrity(type(row["sequence"]) is int and row["sequence"] == sequence)
+        _require_integrity(row["previous"] == previous)
+        digest = row.pop("digest")
+        _require_integrity(digest == _digest(canonical_json(row)))
+        row["digest"] = digest
+        _require_integrity(canonical_json(row) + b"\n" == line)
+        event = EventV1(row["event"])
+        return event, ReceiptV1(sequence, row["event"]["record_id"], row["event"]["run_id"], digest)
+
+    def _read_records(self, accepted):
+        events, receipts, record_ids, run_ids = [], [], set(), set()
+        previous = _ZERO
+        for sequence, line in enumerate(accepted.splitlines(keepends=True), 1):
+            event, receipt = self._decode_row(line, sequence, previous)
+            _require_integrity(receipt.record_id not in record_ids)
+            record_ids.add(receipt.record_id)
+            run_ids.add(receipt.run_id)
+            events.append(event)
+            receipts.append(receipt)
+            previous = receipt.digest
+        return tuple(events), tuple(receipts), previous, sorted(run_ids)
+
+    @staticmethod
+    def _verify_head(head, events, digest, run_ids):
+        _require_integrity(
+            head["count"] == len(events) and head["head"] == digest and head["run_ids"] == run_ids
+        )
+
+    @staticmethod
+    def _verify_pending(pending, tail):
+        if pending is None:
+            _require_integrity(not tail)
+            return
+        _require_integrity(
+            type(pending) is dict
+            and set(pending) == {"line_sha256", "size"}
+            and type(pending["size"]) is int
+            and 0 < pending["size"] <= 70000
+            and type(pending["line_sha256"]) is str
+            and len(pending["line_sha256"]) == 64
+            and len(tail) <= pending["size"]
+        )
+        _require_integrity(len(tail) != pending["size"] or _digest(tail) == pending["line_sha256"])
+
     def _snapshot(self, directory):
         try:
-            head = json.loads(self._read_file(directory, "head.json"))
-            if type(head) is not dict:
-                _integrity()
-            if type(head.get("schema_version")) is not int or head["schema_version"] != 1:
-                _fail("unsupported_version", "Only file audit format v1 is supported.")
-            if set(head) != {"schema_version", "count", "byte_count", "head", "run_ids", "pending"}:
-                _integrity()
-            if any(type(head[k]) is not int or head[k] < 0 for k in ("count", "byte_count")):
-                _integrity()
-            data = self._read_file(directory, "events.jsonl")
-            if len(data) < head["byte_count"]:
-                _integrity()
-            accepted, tail = data[: head["byte_count"]], data[head["byte_count"] :]
-            events, receipts, seen, runs = [], [], set(), set()
-            previous = _ZERO
-            lines = accepted.splitlines(keepends=True)
-            for sequence, line in enumerate(lines, 1):
-                row = json.loads(line)
-                if type(row) is not dict or set(row) != {"sequence", "previous", "event", "digest"}:
-                    _integrity()
-                if (
-                    type(row["sequence"]) is not int
-                    or row["sequence"] != sequence
-                    or row["previous"] != previous
-                ):
-                    _integrity()
-                digest = row.pop("digest")
-                if digest != _digest(canonical_json(row)):
-                    _integrity()
-                row["digest"] = digest
-                if canonical_json(row) + b"\n" != line:
-                    _integrity()
-                item = EventV1(row["event"])
-                record_id, run_id = row["event"]["record_id"], row["event"]["run_id"]
-                if record_id in seen:
-                    _integrity()
-                seen.add(record_id)
-                runs.add(run_id)
-                events.append(item)
-                receipts.append(ReceiptV1(sequence, record_id, run_id, digest))
-                previous = digest
-            if (
-                head["count"] != len(events)
-                or head["head"] != previous
-                or head["run_ids"] != sorted(runs)
-            ):
-                _integrity()
-            pending = head["pending"]
-            if pending is None:
-                if tail:
-                    _integrity()
-            else:
-                if (
-                    type(pending) is not dict
-                    or set(pending) != {"line_sha256", "size"}
-                    or type(pending["size"]) is not int
-                    or not 0 < pending["size"] <= 70000
-                    or type(pending["line_sha256"]) is not str
-                    or len(pending["line_sha256"]) != 64
-                    or len(tail) > pending["size"]
-                ):
-                    _integrity()
-                if len(tail) == pending["size"] and _digest(tail) != pending["line_sha256"]:
-                    _integrity()
-            return head, tuple(events), tuple(receipts), tail
+            head = self._read_head(directory)
+            journal = self._read_file(directory, "events.jsonl")
+            _require_integrity(len(journal) >= head["byte_count"])
+            accepted, tail = journal[: head["byte_count"]], journal[head["byte_count"] :]
+            events, receipts, digest, run_ids = self._read_records(accepted)
+            self._verify_head(head, events, digest, run_ids)
+            self._verify_pending(head["pending"], tail)
+            return head, events, receipts, tail
         except (ValueError, TypeError, KeyError, UnicodeError, RecursionError):
             _integrity()
         except AuditErrorV1 as error:
             if error.code in {"invalid_event", "secret_rejected"}:
                 _integrity()
             raise
+
+    @staticmethod
+    def _matching_receipt(record_id, event, events, receipts):
+        for existing, receipt in zip(events, receipts):
+            if receipt.record_id != record_id:
+                continue
+            if existing != event:
+                _fail("identity_conflict", "Event identity already has different accepted content.")
+            return receipt
+        return None
+
+    def _confirm_receipt(self, directory, context):
+        context.update(phase="confirm_duplicate", writing=True)
+        for name in ("events.jsonl", "head.json"):
+            self._fsync_file(directory, name)
+        os.fsync(directory)
+
+    @staticmethod
+    def _encode_append(head, record):
+        row = {"sequence": head["count"] + 1, "previous": head["head"], "event": record}
+        digest = _digest(canonical_json(row))
+        row["digest"] = digest
+        line = canonical_json(row) + b"\n"
+        pending = {"line_sha256": _digest(line), "size": len(line)}
+        receipt = ReceiptV1(row["sequence"], record["record_id"], record["run_id"], digest)
+        return line, pending, receipt
+
+    @staticmethod
+    def _validate_retry(head, pending, line, tail):
+        if head["pending"] is not None:
+            if head["pending"] != pending:
+                _fail(
+                    "pending_conflict",
+                    "Retry the exact pending event before appending another event.",
+                )
+            if not line.startswith(tail):
+                _integrity()
+
+    def _publish_intent(self, directory, context, head, pending):
+        context.update(phase="publish_intent", writing=True)
+        if head["pending"] is None:
+            self._publish_head(directory, dict(head, pending=pending))
+            return
+        # The previous rename may be visible despite a failed directory fsync.
+        self._fsync_file(directory, "head.json")
+        os.fsync(directory)
+
+    def _write_event(self, directory, context, line, tail):
+        context["phase"] = "write_event"
+        with self._file(directory, "events.jsonl", os.O_WRONLY | os.O_APPEND) as fd:
+            _write_all(fd, line[len(tail) :])
+            os.fsync(fd)
+
+    def _accept_event(self, directory, context, head, record, line, receipt):
+        context["phase"] = "accept_event"
+        self._publish_head(
+            directory,
+            {
+                "schema_version": 1,
+                "count": receipt.sequence,
+                "byte_count": head["byte_count"] + len(line),
+                "head": receipt.digest,
+                "run_ids": sorted(set(head["run_ids"]) | {record["run_id"]}),
+                "pending": None,
+            },
+        )
 
     def append_v1(self, event):
         if not isinstance(event, EventV1):
@@ -306,59 +380,16 @@ class FileAuditV1:
         with self._session(context) as directory:
             head, events, receipts, tail = self._snapshot(directory)
             record = event.to_dict()
-            for existing, receipt in zip(events, receipts):
-                if receipt.record_id == record["record_id"]:
-                    if existing != event:
-                        _fail(
-                            "identity_conflict",
-                            "Event identity already has different accepted content.",
-                        )
-                    # Reconfirm durability even after an earlier ambiguous fsync.
-                    context.update(phase="confirm_duplicate", writing=True)
-                    for name in ("events.jsonl", "head.json"):
-                        with self._file(directory, name) as fd:
-                            os.fsync(fd)
-                    os.fsync(directory)
-                    return receipt
-            row = {"sequence": head["count"] + 1, "previous": head["head"], "event": record}
-            digest = _digest(canonical_json(row))
-            row["digest"] = digest
-            line = canonical_json(row) + b"\n"
-            pending = {"line_sha256": _digest(line), "size": len(line)}
-            if head["pending"] is not None:
-                if head["pending"] != pending:
-                    _fail(
-                        "pending_conflict",
-                        "Retry the exact pending event before appending another event.",
-                    )
-                if not line.startswith(tail):
-                    _integrity()
-            context.update(phase="publish_intent", writing=True)
-            if head["pending"] is None:
-                self._publish_head(directory, dict(head, pending=pending))
-            else:
-                # A previous rename may be visible even when its directory fsync
-                # failed. Make that intent durable before any recovery write.
-                with self._file(directory, "head.json") as fd:
-                    os.fsync(fd)
-                os.fsync(directory)
-            context["phase"] = "write_event"
-            with self._file(directory, "events.jsonl", os.O_WRONLY | os.O_APPEND) as fd:
-                _write_all(fd, line[len(tail) :])
-                os.fsync(fd)
-            context["phase"] = "accept_event"
-            self._publish_head(
-                directory,
-                {
-                    "schema_version": 1,
-                    "count": row["sequence"],
-                    "byte_count": head["byte_count"] + len(line),
-                    "head": digest,
-                    "run_ids": sorted(set(head["run_ids"]) | {record["run_id"]}),
-                    "pending": None,
-                },
-            )
-            return ReceiptV1(row["sequence"], record["record_id"], record["run_id"], digest)
+            receipt = self._matching_receipt(record["record_id"], event, events, receipts)
+            if receipt:
+                self._confirm_receipt(directory, context)
+                return receipt
+            line, pending, receipt = self._encode_append(head, record)
+            self._validate_retry(head, pending, line, tail)
+            self._publish_intent(directory, context, head, pending)
+            self._write_event(directory, context, line, tail)
+            self._accept_event(directory, context, head, record, line, receipt)
+            return receipt
 
     def _accepted(self):
         with self._session({"phase": "verify"}) as directory:

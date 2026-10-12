@@ -40,58 +40,54 @@ def canonical_json(value):
     ).encode("utf-8")
 
 
-_SECRET_KEYS = {
-    "password",
-    "passwd",
-    "secret",
-    "secrets",
-    "token",
-    "accesstoken",
-    "refreshtoken",
-    "apikey",
-    "authorization",
-    "credential",
-    "credentials",
-    "privatekey",
-    "clientsecret",
-    "cookie",
-    "setcookie",
-    "sessionid",
-}
+_SECRET_KEYS = set(
+    "password passwd secret secrets token accesstoken refreshtoken apikey authorization "
+    "credential credentials privatekey clientsecret cookie setcookie sessionid".split()
+)
 _SECRET_VALUE = re.compile(
     r"(?i)\bbearer\s+\S+|-----BEGIN (?:[A-Z ]*PRIVATE KEY|OPENSSH PRIVATE KEY)-----"
     r"|\b(?:gh[pousr]_[A-Za-z0-9_]{10,}|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9_-]{16,})"
 )
+_SECRET_SUFFIXES = ("password", "secret", "token", "apikey", "privatekey")
+_EVENT_FIELDS = set(
+    "schema_version record_id record_type run_id task_ref recorded_at provenance details".split()
+)
+_RECORD_TYPE = re.compile(r"[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+")
+_TIMESTAMP = re.compile(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,6})?Z")
 
 
 def _invalid():
     raise AuditErrorV1("invalid_event", "Invalid v1 envelope or JSON details.")
 
 
-def _walk(value, depth=0, secrets=()):
+def _secret():
+    raise AuditErrorV1("secret_rejected", "Secret-bearing content rejected before persistence.")
+
+
+def _reject_secret(value, *, key, secrets):
+    if key:
+        normalized = re.sub(r"[^a-z0-9]", "", value.lower())
+        if normalized in _SECRET_KEYS or normalized.endswith(_SECRET_SUFFIXES):
+            _secret()
+    if _SECRET_VALUE.search(value) or any(secret in value for secret in secrets):
+        _secret()
+
+
+def _walk_json(value, visit_string, depth=0):
     if depth > 16:
         _invalid()
     if type(value) is dict:
         for key, item in value.items():
             if type(key) is not str:
                 _invalid()
-            normalized = re.sub(r"[^a-z0-9]", "", key.lower())
-            if normalized in _SECRET_KEYS or normalized.endswith(
-                ("password", "secret", "token", "apikey", "privatekey")
-            ):
-                raise AuditErrorV1(
-                    "secret_rejected", "Secret-bearing content rejected before persistence."
-                )
-            _walk(key, depth + 1, secrets)
-            _walk(item, depth + 1, secrets)
+            visit_string(key, key=True)
+            _walk_json(key, visit_string, depth + 1)
+            _walk_json(item, visit_string, depth + 1)
     elif type(value) is list:
         for item in value:
-            _walk(item, depth + 1, secrets)
+            _walk_json(item, visit_string, depth + 1)
     elif type(value) is str:
-        if _SECRET_VALUE.search(value) or any(secret in value for secret in secrets):
-            raise AuditErrorV1(
-                "secret_rejected", "Secret-bearing content rejected before persistence."
-            )
+        visit_string(value, key=False)
     elif value is None or type(value) is bool:
         pass
     elif type(value) is int:
@@ -104,70 +100,75 @@ def _walk(value, depth=0, secrets=()):
         _invalid()
 
 
+def _valid_uuid(value):
+    try:
+        return type(value) is str and str(UUID(value)) == value
+    except (ValueError, TypeError, AttributeError):
+        return False
+
+
+def _valid_timestamp(value):
+    if type(value) is not str or not _TIMESTAMP.fullmatch(value):
+        return False
+    try:
+        datetime.fromisoformat(value)
+        return True
+    except ValueError:
+        return False
+
+
+def _valid_text_map(value, fields):
+    return (
+        type(value) is dict
+        and set(value) == fields
+        and all(type(item) is str and item.strip() and len(item) <= 256 for item in value.values())
+    )
+
+
+def _encode(record):
+    try:
+        encoded = canonical_json(record)
+    except (ValueError, UnicodeError):
+        _invalid()
+    if len(encoded) > 65536:
+        _invalid()
+    return encoded
+
+
+def _validate_record(record):
+    if type(record) is not dict:
+        _invalid()
+    if type(record.get("schema_version")) is not int or record["schema_version"] != 1:
+        raise AuditErrorV1("unsupported_version", "Only audit envelope v1 is supported.")
+    if set(record) != _EVENT_FIELDS:
+        _invalid()
+    _walk_json(record, lambda value, key: _reject_secret(value, key=key, secrets=()))
+    if not all(_valid_uuid(record[field]) for field in ("record_id", "run_id")):
+        _invalid()
+    if not _valid_timestamp(record["recorded_at"]):
+        _invalid()
+    name = record["record_type"]
+    if type(name) is not str or len(name) > 128 or not _RECORD_TYPE.fullmatch(name):
+        _invalid()
+    task, provenance = record["task_ref"], record["provenance"]
+    if not _valid_text_map(task, {"provider", "project", "id"}):
+        _invalid()
+    if not _valid_text_map(provenance, {"kind", "source"}):
+        _invalid()
+    if provenance["kind"] not in {"controller", "adapter", "agent", "operator"}:
+        _invalid()
+    if type(record["details"]) is not dict:
+        _invalid()
+
+
 class EventV1:
     """Immutable canonical snapshot; dictionary access always returns a copy."""
 
     __slots__ = ("_canonical",)
 
     def __init__(self, record):
-        if type(record) is not dict:
-            _invalid()
-        if type(record.get("schema_version")) is not int or record["schema_version"] != 1:
-            raise AuditErrorV1("unsupported_version", "Only audit envelope v1 is supported.")
-        if set(record) != {
-            "schema_version",
-            "record_id",
-            "record_type",
-            "run_id",
-            "task_ref",
-            "recorded_at",
-            "provenance",
-            "details",
-        }:
-            _invalid()
-        _walk(record)
-        for field in ("record_id", "run_id"):
-            try:
-                if str(UUID(record[field])) != record[field]:
-                    _invalid()
-            except (ValueError, TypeError, AttributeError):
-                _invalid()
-        timestamp = record["recorded_at"]
-        if type(timestamp) is not str or not re.fullmatch(
-            r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,6})?Z", timestamp
-        ):
-            _invalid()
-        try:
-            datetime.fromisoformat(timestamp)
-        except ValueError:
-            _invalid()
-        name = record["record_type"]
-        if (
-            type(name) is not str
-            or len(name) > 128
-            or not re.fullmatch(r"[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+", name)
-        ):
-            _invalid()
-        task = record["task_ref"]
-        provenance = record["provenance"]
-        if type(task) is not dict or set(task) != {"provider", "project", "id"}:
-            _invalid()
-        if type(provenance) is not dict or set(provenance) != {"kind", "source"}:
-            _invalid()
-        for value in (*task.values(), *provenance.values()):
-            if type(value) is not str or not value.strip() or len(value) > 256:
-                _invalid()
-        if provenance["kind"] not in {"controller", "adapter", "agent", "operator"}:
-            _invalid()
-        if type(record["details"]) is not dict:
-            _invalid()
-        try:
-            encoded = canonical_json(record)
-        except (ValueError, UnicodeError):
-            _invalid()
-        if len(encoded) > 65536:
-            _invalid()
-        object.__setattr__(self, "_canonical", encoded)
+        _validate_record(record)
+        object.__setattr__(self, "_canonical", _encode(record))
 
     def __setattr__(self, name, value):
         raise AttributeError("EventV1 is immutable")
@@ -180,7 +181,9 @@ class EventV1:
         return json.loads(self._canonical)
 
     def reject_secrets(self, secrets):
-        _walk(self.to_dict(), secrets=secrets)
+        _walk_json(
+            self.to_dict(), lambda value, key: _reject_secret(value, key=key, secrets=secrets)
+        )
 
     def __eq__(self, other):
         return isinstance(other, EventV1) and self.canonical == other.canonical
