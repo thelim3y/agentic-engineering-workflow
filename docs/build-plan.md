@@ -6,19 +6,22 @@ The contracts in the [design index](README.md) own requirements.
 
 ## Delivery order
 
-1. [Prove trustworthy agent execution](https://github.com/thelim3y/agentic-engineering-workflow/issues/2):
-   settle the product boundary, repair the conformance harness, and prove at least
-   two independent runner adapters against one contract.
-2. [Build the trusted controller](https://github.com/thelim3y/agentic-engineering-workflow/issues/3):
-   records, audit, recovery, configuration, the public runner-adapter contract,
-   GitHub intake, and planning.
-3. [Deliver the protected C++ workflow](https://github.com/thelim3y/agentic-engineering-workflow/issues/4):
+1. Settle the runtime boundary and repair the isolation harness in
+   [trustworthy agent execution](https://github.com/thelim3y/agentic-engineering-workflow/issues/2).
+2. Build the versioned record contract and file audit provider in
+   [the trusted controller](https://github.com/thelim3y/agentic-engineering-workflow/issues/3)
+   before product adapters or controller actions, so later code emits audit records
+   from its first implementation.
+3. Publish the runner contract, then validate at least two independent adapters and
+   implement the remaining controller, recovery, configuration, GitHub intake and
+   planning work from issues #2 and #3.
+4. [Deliver the protected C++ workflow](https://github.com/thelim3y/agentic-engineering-workflow/issues/4):
    TDD, implementation, independent testing, bounded repair, presets, and Clang.
-4. [Add bounded context and learning](https://github.com/thelim3y/agentic-engineering-workflow/issues/5):
+5. [Add bounded context and learning](https://github.com/thelim3y/agentic-engineering-workflow/issues/5):
    Engram, approved lessons, and post-run task feedback.
-5. [Deliver the GitHub PR lifecycle](https://github.com/thelim3y/agentic-engineering-workflow/issues/6):
+6. [Deliver the GitHub PR lifecycle](https://github.com/thelim3y/agentic-engineering-workflow/issues/6):
    draft, review, repair, ready, gated merge, recovery, and completion.
-6. [Evaluate and extend](https://github.com/thelim3y/agentic-engineering-workflow/issues/7):
+7. [Evaluate and extend](https://github.com/thelim3y/agentic-engineering-workflow/issues/7):
    compare with a simpler baseline before adding later targets.
 
 ## Checkpoints
