@@ -30,8 +30,18 @@ absence of an audit event.
 
 Append the authorized intent before an action starts and append its observed outcome
 afterward. An action whose intent cannot be durably appended must not start. Failure
-to append a required outcome blocks further work and enters recovery; it must not be
-treated as permission to continue without audit coverage.
+to append a required event pauses the run in an audit-unavailable state rather than
+terminating or advancing it. The controller durably preserves the pending event and
+failure details in recovery state, notifies the user through the configured channel,
+preserves that notification attempt as another pending event, and waits for an
+explicit user decision.
+
+Approval to continue authorizes audit recovery and retry; it does not waive audit
+coverage. Preserve the authenticated approval as pending until it can be appended.
+After the audit provider recovers, append the missing events, notification outcome
+and approval in their original order before resuming normal work. If recovery or
+backfill still fails, remain paused and notify again when possible. The user may also
+abort the run; preserve and append that decision through the same recovery path.
 
 - Run/task/role/invocation identities and effective configuration.
 - Original task, accepted plan, input snapshots and the context actually supplied.
@@ -67,7 +77,8 @@ configuration validation. Integrity checks and agent isolation remain required.
 Publish referenced artifacts before accepting the event that relies on them. Retain
 the durable event position in every checkpoint. Never publish completed state ahead
 of its audit coverage; use atomic publication or a write-ahead/reconciliation protocol.
-See [crash ordering](checkpoints.md). A failed required append blocks further work.
+See [crash ordering](checkpoints.md). A failed required append enters the
+audit-unavailable pause and recovery path defined above.
 
 Redact secrets before persistence. Apply hidden-test and project restrictions to
 artifacts, indexes, logs, backups and exports. If required evidence cannot be safely
