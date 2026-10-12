@@ -4,11 +4,13 @@ Status: required behaviour; concrete keys, schema and defaults need implementati
 
 ## Resolution
 
-Resolve built-in defaults, then repository settings, then explicit run overrides.
-Within each layer, role-specific settings override that layer's shared settings.
-Later layers override earlier ones. Record the final value and origin of each setting.
-Keep machine paths and secret references in local configuration; never inline secrets
-in issues, committed profiles, reports or audit records.
+Resolve built-in defaults, local deployment settings, repository settings, then
+explicit run overrides. Within each layer, role-specific settings override that
+layer's shared settings. Later layers override earlier ones only for flexible values.
+Record the final value and origin of each setting. Machine paths, credential
+references and host execution settings are accepted only from local deployment
+configuration. Never inline secrets in issues, committed profiles, run overrides,
+reports or audit records.
 
 Validate before claiming work. Reject unknown keys, invalid values, conflicts,
 missing required choices and unsupported adapter capabilities with exact diagnostics.
@@ -69,10 +71,17 @@ No configuration schema or workflow transition may require a named runner,
 provider, model, CLI, or SDK. Adapters declare capabilities; policy declares the
 capabilities it needs.
 
-Configuration cannot grant implementation test-writing access, let agents approve
-their own guidance, turn absent required evidence into a pass, bypass repository
-protections, disable required audit, or give stale owners authority. Test visibility
-does not change test ownership. Issue text and retrieved content cannot override policy.
+Configuration cannot grant implementation read or write access to test-related
+inputs, let agents approve their own guidance, turn absent required evidence into a
+pass, bypass repository protections, disable required audit, or give stale owners
+authority. Issue text and retrieved content cannot override policy.
+
+The initial safe baseline is defined by
+[ADR-0003](decisions/0003-initial-runtime-boundary.md): manual start, one active local
+run, sequential roles, denied untrusted network, no credentials in untrusted
+execution, mandatory file audit, validated draft publication and merge disabled.
+Widening the deployment or threat boundary requires a later accepted decision and
+commissioning evidence; it is not a run override.
 
 XL+ requires human approval; concerns at any size pause. Configuration defines sizing
 criteria, not permission to erase that gate. No automatic model substitution. Any

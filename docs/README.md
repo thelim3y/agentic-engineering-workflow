@@ -34,18 +34,21 @@ shared agent entry point. Planned work lives in
 | [Build plan](build-plan.md) | Delivery order and feasibility gates. |
 | [ADR-0001](decisions/0001-trusted-workflow-boundaries.md) | Why trusted control is separate from agents. |
 | [ADR-0002](decisions/0002-runner-independent-core.md) | Why the core is independent of runners, providers, and models. |
+| [ADR-0003](decisions/0003-initial-runtime-boundary.md) | Initial controller runtime, platform, threat boundary, and safe policy. |
 
 ## Authority and scope
 
 Each topic has one owner above. Other documents summarize; they do not redefine.
-Records use one versioned product contract. Schemas and runtime language remain
-implementation work.
+Records use one versioned product contract. Schemas remain implementation work.
+The initial runtime and support boundary are fixed by [ADR-0003](decisions/0003-initial-runtime-boundary.md).
 
 These documents contain the current design. Unsettled proposals belong in issues
 or explicitly proposed ADRs, not mixed into authoritative contract text.
 
-C++ is first; .NET/C# follows. Python remains a candidate. GitHub is initial;
-Jira and local models are later. Engram is the only selected real memory backend.
+C++ is the first application target; .NET/C# follows. Python application support
+remains a candidate. The initial controller uses Python under ADR-0003. GitHub is
+initial; Jira and local models are later. Engram is the only selected real memory
+backend.
 
 Single-purpose roles do not require separate services or LLM calls for mechanical
 steps. Do not add a second memory backend, mandatory vector database, generic
