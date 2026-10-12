@@ -1,54 +1,49 @@
 # Software factory design
 
-Status: agreed direction and required contracts; runtime not implemented or proven.
-This is a public, local-friendly, model-agnostic workflow, initially entered through
-Claude Code or Codex. A plugin is its entry point, not its security boundary.
+Status: agreed contracts; runtime not implemented. The factory is public,
+local-friendly, model-agnostic, and initially entered through Claude Code or Codex.
+A plugin is an entry point, not a security boundary.
 
-## Read by topic
+## Developing this project
+
+Follow [Development rules](development-rules.md). [AGENTS.md](../AGENTS.md) is the
+shared LLM entry point. Planned work lives in
+[GitHub Issues](https://github.com/thelim3y/agentic-engineering-workflow/issues).
+
+## Contract index
 
 | Document | Owns |
 |---|---|
-| [Architecture](architecture.md) | Components, trust boundaries, current versus future scope. |
-| [Workflow](workflow.md) | Stage order, role handoffs, issue state, completion. |
-| [Planner](planner.md) | Task clarity, plan, size assessment and escalation. |
-| [Interfaces](interfaces.md) | Product-owned adapter responsibilities and capabilities. |
-| [Communication protocol](communication-protocol.md) | Invocation, agent report, execution evidence and approval records. |
-| [Execution boundary](execution.md) | Permissions, isolated workspaces, credentials and enforcement proof. |
-| [Checkpoints](checkpoints.md) | Ownership, crash ordering, retries and resume. |
-| [Audit](audit.md) | Immutable history, evidence retention and limits of the guarantee. |
-| [Verification](verification.md) | Test quality, red/green gates and native application profiles. |
-| [Evaluation](evaluation.md) | Measuring the factory, regression cases and release evidence. |
-| [Retrieval](retrieval.md) | Scoped, versioned supporting context. |
-| [Learning](learning.md) | Human-approved lessons and future convention analysis. |
-| [Configuration](configuration.md) | Precedence, validation, configurable policy and fixed invariants. |
-| [Setup guide](setup-guide.md) | Onboarding and the C++ tooling shortlist. |
-| [Build plan](build-plan.md) | Incremental delivery order and feasibility gates. |
-| [Implementation tasks](implementation-tasks.md) | Unimplemented work and required checks. |
-| [Decision record](decisions/0001-trusted-workflow-boundaries.md) | Why trusted control is separate from agent reasoning. |
-| [Design review](reviews/2026-10-11-design-review.md) | Findings, documented resolutions, checks and remaining decisions. |
+| [Architecture](architecture.md) | Components, trust boundaries, and scope. |
+| [Workflow](workflow.md) | Stage order, handoffs, issue state, and completion. |
+| [Planner](planner.md) | Clarity, planning, size, risk, and escalation. |
+| [Interfaces](interfaces.md) | Product-owned adapter contracts and capabilities. |
+| [Communication](communication-protocol.md) | Invocation, report, evidence, and approval records. |
+| [Execution](execution.md) | Permissions, workspaces, credentials, and enforcement. |
+| [Checkpoints](checkpoints.md) | Ownership, effects, retries, and recovery. |
+| [Audit](audit.md) | Immutable history, artifacts, retention, and limits. |
+| [Verification](verification.md) | Test quality, gates, and native profiles. |
+| [Evaluation](evaluation.md) | Trials, metrics, regressions, and release evidence. |
+| [Retrieval](retrieval.md) | Scoped and versioned supporting context. |
+| [Learning](learning.md) | Human-approved lessons and task feedback. |
+| [Configuration](configuration.md) | Precedence, policy, validation, and invariants. |
+| [Setup](setup-guide.md) | Host onboarding and C++ tool selection. |
+| [Build plan](build-plan.md) | Delivery order and feasibility gates. |
+| [ADR-0001](decisions/0001-trusted-workflow-boundaries.md) | Why trusted control is separate from agents. |
 
 ## Authority and scope
 
-Each contract has one owner in the table. Guides, examples and diagrams summarize
-those contracts; they do not redefine them. Report conflicts rather than guessing.
-These documents supersede the earlier conversation-workspace design drafts.
+Each topic has one owner above. Other documents summarize; they do not redefine.
+Records use one versioned product contract. Schemas and runtime language remain
+implementation work.
 
-Records use one versioned product contract. Its required semantics are specified;
-machine-readable schemas and runtime language remain implementation work. No example
-configuration or record is evidence that a parser or adapter already exists.
+C++ is first; .NET/C# follows. Python remains a candidate. GitHub is initial;
+Jira and local models are later. Engram is the only selected real memory backend.
 
-C++ is the first validation target; .NET/C# follows. Python remains a candidate.
-Additional languages use project verification profiles, not changes to core roles.
-GitHub is initial; Jira and local-model runners are future integrations. Engram is
-the only selected real memory backend. Fake adapters are for tests only.
+Single-purpose roles do not require separate services or LLM calls for mechanical
+steps. Do not add a second memory backend, mandatory vector database, generic
+plugin marketplace, or microservices without evidence.
 
-## Boundaries on this design
-
-Single-purpose roles do not require separate services or an LLM call for every step.
-Use deterministic tools for mechanical checks. Keep the initial controller small.
-Do not add a second memory backend, mandatory vector database, or microservices
-without a demonstrated need. Future boxes are not first-release requirements.
-
-All user-facing output must be as concise as possible while preserving necessary
-facts, evidence, limitations and required actions. A green run means its configured
-checks passed, not that the application has no defects.
+User-facing output must be as concise as possible without hiding facts, evidence,
+limitations, or required action. A green run means configured checks passed; it
+does not prove the application has no defects.
