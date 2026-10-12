@@ -1,7 +1,8 @@
 # Isolation conformance suite
 
 Status: bounded feasibility spike. It does not approve the production execution
-boundary or choose the controller language.
+boundary, choose the controller language, or make any measured adapter part of the
+core architecture.
 
 ## Contract
 

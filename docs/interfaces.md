@@ -27,6 +27,21 @@ guarantees must match too. Missing capabilities must be reported, not fabricated
 Named providers in the architecture are initial or planned implementations, not
 an exhaustive list or a limit on what can be connected.
 
+## Runner independence
+
+The core must not contain named-runner branches, provider SDK types, or assumptions
+about a CLI. It consumes product-owned invocation, capability, lifecycle, output,
+and error records.
+
+An adapter may use a CLI, desktop host, local runtime, hosted agent service, or API
+if it fulfils the same contract. Configuration selects runner, provider, and model
+per role. The core receives declared capabilities and stable product identifiers;
+provider-specific details stay inside the adapter and its evidence.
+
+Runner independence is an architecture rule, not a claim that every runner already
+works. Each adapter/version/OS combination must pass conformance before support is
+claimed.
+
 ## Contract responsibilities
 
 | Interface | Owns | Does not own |

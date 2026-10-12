@@ -7,10 +7,10 @@ The contracts in the [design index](README.md) own requirements.
 ## Delivery order
 
 1. [Prove trustworthy agent execution](https://github.com/thelim3y/agentic-engineering-workflow/issues/2):
-   settle the product boundary, repair the conformance harness, and prove Claude
-   Code and Codex sessions.
+   settle the product boundary, repair the conformance harness, and prove at least
+   two independent runner adapters against one contract.
 2. [Build the trusted controller](https://github.com/thelim3y/agentic-engineering-workflow/issues/3):
-   records, audit, recovery, configuration, host plugins, GitHub intake, and planning.
+   records, audit, recovery, configuration, runner adapters, GitHub intake, and planning.
 3. [Deliver the protected C++ workflow](https://github.com/thelim3y/agentic-engineering-workflow/issues/4):
    TDD, implementation, independent testing, bounded repair, presets, and Clang.
 4. [Add bounded context and learning](https://github.com/thelim3y/agentic-engineering-workflow/issues/5):
@@ -22,8 +22,8 @@ The contracts in the [design index](README.md) own requirements.
 
 ## Checkpoints
 
-- **Execution:** both hosts satisfy the same declared contract. A human selects
-  the production boundary.
+- **Execution:** two independent adapters satisfy the same declared contract. A
+  human selects the production boundary.
 - **Local workflow:** one C++ task completes red, green, repair, and native checks
   without PR publication.
 - **Context:** Engram cannot disclose protected inputs or override gates.

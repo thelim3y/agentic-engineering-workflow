@@ -18,14 +18,18 @@ the factory does not.
 
 ## Direction
 
-Start manually from Claude Code or Codex with a labelled GitHub issue. One issue
-targets one reviewable PR. Oversized or concerning work requires human approval.
+Start manually through a configured agent runner with a labelled GitHub issue.
+One issue targets one reviewable PR. Oversized or concerning work requires human
+approval.
 
 TDD owns every test-related input. Implementation cannot change it. Deterministic
 controls validate evidence, transitions, approvals, recovery, and completion.
 
-C++ is the first validation target; .NET/C# follows. Engram is the selected memory
+C++ is the first application target; .NET/C# follows. Engram is the selected memory
 backend. Jira, local-model runners, and convention analysis remain later work.
+
+The core contract is independent of any LLM, provider, model, or agent host. Named
+runners in feasibility work are initial adapters, not architectural dependencies.
 
 ## Contributing
 
