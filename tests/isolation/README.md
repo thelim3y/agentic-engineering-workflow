@@ -28,7 +28,10 @@ changing tree make the phase untested.
 
 Child stdout and stderr feed a trusted pipe collector. It drains while the process
 runs, retains at most 1 MiB, and records truncation separately from pipe completion.
-Any truncation or incomplete drain makes the phase untested.
+The result separately records total bytes, retained bytes, UTF-8 replacement,
+truncation, and drain completion. Any truncation or incomplete drain makes the phase
+untested. The child receives only the non-seekable writer and cannot rewrite bytes
+already accepted by the collector.
 
 ## Safe use
 

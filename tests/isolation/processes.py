@@ -44,10 +44,18 @@ class _OutputCollector:
 
     def finish(self, timeout=2):
         self.thread.join(timeout)
+        raw = bytes(self.content)
+        try:
+            output = raw.decode("utf-8")
+            decode_replaced = False
+        except UnicodeDecodeError:
+            output = raw.decode("utf-8", errors="replace")
+            decode_replaced = True
         return {
-            "output": bytes(self.content).decode("utf-8", errors="replace"),
+            "output": output,
             "output_bytes_retained": len(self.content),
             "output_bytes_total": self.total,
+            "output_decode_replaced": decode_replaced,
             "output_truncated": self.total > self.limit,
             "drain_complete": not self.thread.is_alive() and self.error is None,
         }
