@@ -1,6 +1,7 @@
 # Audit and evidence storage
 
-Status: required contract; storage, deployment and retention defaults undecided.
+Status: required contract with an implemented [file audit v1 baseline](audit-v1.md).
+Full controller integration, artifact storage and retention remain planned.
 
 ## Purpose
 
