@@ -73,9 +73,71 @@ class ProcessSupervisionTests(unittest.TestCase):
             print(json.dumps(result))
         """)
         self.assertEqual(len(result["output"].encode()), 1024 * 1024)
+        self.assertEqual(result["output_bytes_retained"], 1024 * 1024)
+        self.assertEqual(result["output_bytes_total"], 1024 * 1024 + 4096)
         self.assertTrue(result["output_truncated"])
         self.assertTrue(result["drain_complete"])
         self.assertEqual(result["remaining"], [])
+
+    def test_child_cannot_seek_or_truncate_accepted_output(self):
+        program = textwrap.dedent("""
+            import os
+            os.write(1, b"EARLIER_FAILURE\\n")
+            for action in (lambda: os.lseek(1, 0, 0), lambda: os.ftruncate(1, 0)):
+                try:
+                    action()
+                except OSError:
+                    pass
+                else:
+                    os.write(1, b"SEEKABLE_BYPASS\\n")
+            os.write(1, b"LATER_OUTPUT\\n")
+        """)
+        result = self.scenario(f"""
+            program = {program!r}
+            result = processes.run_command(
+                [sys.executable, '-c', program], env={{'PATH': os.defpath}},
+                cwd=root, timeout=2)
+            print(json.dumps(result))
+        """)
+        self.assertEqual(result["rc"], 0)
+        self.assertEqual(result["output"], "EARLIER_FAILURE\nLATER_OUTPUT\n")
+        self.assertFalse(result["output_truncated"])
+        self.assertTrue(result["drain_complete"])
+
+    def test_duplicated_descriptor_and_fragmented_writes_append(self):
+        program = textwrap.dedent("""
+            import os, subprocess, sys
+            duplicate = os.dup(1)
+            os.write(1, b"parent:")
+            child = "import os, sys; fd=int(sys.argv[1]); [os.write(fd, bytes([value])) for value in b'child']"
+            subprocess.run([sys.executable, "-c", child, str(duplicate)],
+                           pass_fds=(duplicate,), check=True)
+            os.write(duplicate, b":done\\n")
+        """)
+        result = self.scenario(f"""
+            program = {program!r}
+            result = processes.run_command(
+                [sys.executable, '-c', program], env={{'PATH': os.defpath}},
+                cwd=root, timeout=2)
+            print(json.dumps(result))
+        """)
+        self.assertEqual(result["rc"], 0)
+        self.assertEqual(result["output"], "parent:child:done\n")
+        self.assertFalse(result["output_truncated"])
+        self.assertTrue(result["drain_complete"])
+
+    def test_invalid_encoding_is_retained_and_reported(self):
+        program = r"import os; os.write(1, b'valid\xfftail')"
+        result = self.scenario(f"""
+            result = processes.run_command(
+                [sys.executable, '-c', {program!r}],
+                env={{'PATH': os.defpath}}, cwd=root, timeout=2)
+            print(json.dumps(result))
+        """)
+        self.assertEqual(result["output"], "valid\ufffdtail")
+        self.assertEqual(result["output_bytes_total"], 10)
+        self.assertTrue(result["output_decode_replaced"])
+        self.assertTrue(result["drain_complete"])
 
     def test_command_finishing_before_cancel_deadline_is_not_cancelled(self):
         result = self.scenario("""
@@ -164,6 +226,7 @@ class ProcessSupervisionTests(unittest.TestCase):
         self.assertFalse(result["timed_out"])
         self.assertIn(result["detached_pid"], [int(pid) for pid in result["survivors"]])
         self.assertTrue(result["drain_complete"])
+        self.assertFalse(result["output_truncated"])
         self.assertTrue(result["descendants_verified"])
         self.assertLess(result["elapsed"], 2.5)
         self.assertEqual(result["remaining"], [])
@@ -184,6 +247,25 @@ class ProcessSupervisionTests(unittest.TestCase):
         """)
         self.assertTrue(result["cancelled"])
         self.assertIn(result["detached_pid"], [int(pid) for pid in result["survivors"]])
+        self.assertEqual(result["remaining"], [])
+
+    def test_detached_late_output_appends_before_cleanup(self):
+        result = self.scenario("""
+            child_code = 'import os, time; time.sleep(0.25); os.write(1, b"late\\\\n")'
+            parent_code = (
+                'import subprocess, sys, time; '
+                f'p = subprocess.Popen([sys.executable, "-c", {child_code!r}], start_new_session=True); '
+                'print("early", flush=True); time.sleep(3)')
+            result = processes.run_command([sys.executable, '-c', parent_code],
+                env={'PATH': os.defpath}, cwd=root, timeout=2,
+                cancel_after=0.1, late_wait=0.4)
+            result['remaining'] = list(processes.descendants())
+            print(json.dumps(result))
+        """)
+        self.assertTrue(result["cancelled"])
+        self.assertEqual(result["output"], "early\nlate\n")
+        self.assertTrue(result["drain_complete"])
+        self.assertFalse(result["output_truncated"])
         self.assertEqual(result["remaining"], [])
 
 
