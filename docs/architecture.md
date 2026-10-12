@@ -7,8 +7,8 @@ undecided. This diagram shows logical components, not separate services or agent
 
 ```mermaid
 flowchart TB
-    User["User"] --> Plugin["CLI plugin"]
-    Plugin --> Core
+    User["User"] --> Entry["Host entry point"]
+    Entry --> Core
 
     subgraph Factory["Trusted workflow control — enforcement required"]
         Core["Deterministic controller<br/>Gates, approvals, recovery"]
@@ -43,7 +43,7 @@ flowchart TB
     Conventions -.->|"Suggested guidance"| Approval
 
     subgraph Untrusted["Restricted execution — no control-plane write authority"]
-        Hosts["Claude Code / Codex<br/>Role-specific sessions and models"]
+        Hosts["Agent runner<br/>Role-specific sessions and models"]
         Work["Repository and generated code<br/>Configure, build and test processes"]
     end
     Runner <-->|"Scoped invocations and outputs"| Hosts
@@ -52,7 +52,7 @@ flowchart TB
     Issues <-->|"GitHub adapter"| GitHub["GitHub"]
     Repo <-->|"Git and GitHub adapters"| GitHub
     Issues -.->|"Jira adapter"| Jira["Jira — future"]
-    Runner -.->|"Local-runner adapter"| Local["Local-capable runner — future"]
+    Runner -.->|"Additional adapter"| Local["Local or remote runner"]
     Memory <-->|"Engram adapter"| Engram["Engram<br/>Context and approved lessons"]
 
     classDef future fill:#f1f5f9,stroke:#64748b,stroke-dasharray:5 5,color:#334155;
@@ -71,6 +71,8 @@ Arrows show primary interactions, not every audit event or data transfer.
 
 - [Interfaces](interfaces.md) define our product's data and behaviour. Adapters
   translate providers into those contracts; named providers are not an exhaustive list.
+- The core has no named-runner branches or provider SDK types. Runner, provider,
+  and model choices resolve through capabilities and versioned adapter contracts.
 - The workflow controls progression; agent outputs are claims to validate, not authority.
 - [Execution isolation](execution.md) applies to agent sessions and their generated
   code, including subprocesses and build scripts. The boundary drawn is required,

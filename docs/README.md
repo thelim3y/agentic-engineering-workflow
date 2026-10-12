@@ -1,13 +1,13 @@
 # Software factory design
 
 Status: agreed contracts; runtime not implemented. The factory is public,
-local-friendly, model-agnostic, and initially entered through Claude Code or Codex.
-A plugin is an entry point, not a security boundary.
+local-friendly, and independent of any LLM, provider, model, or agent host.
+Plugins and other host integrations are entry points, not security boundaries.
 
 ## Developing this project
 
 Follow [Development rules](development-rules.md). [AGENTS.md](../AGENTS.md) is the
-shared LLM entry point. Planned work lives in
+shared agent entry point. Planned work lives in
 [GitHub Issues](https://github.com/thelim3y/agentic-engineering-workflow/issues).
 
 ## Contract index
@@ -30,6 +30,7 @@ shared LLM entry point. Planned work lives in
 | [Setup](setup-guide.md) | Host onboarding and C++ tool selection. |
 | [Build plan](build-plan.md) | Delivery order and feasibility gates. |
 | [ADR-0001](decisions/0001-trusted-workflow-boundaries.md) | Why trusted control is separate from agents. |
+| [ADR-0002](decisions/0002-runner-independent-core.md) | Why the core is independent of runners, providers, and models. |
 
 ## Authority and scope
 

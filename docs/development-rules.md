@@ -36,6 +36,8 @@ whole system in their head.
 - **Fail clearly.** Explain what failed, its impact and the next useful action.
 - **Keep one source of truth.** Link to authoritative rules rather than copying
   them into other documents or prompts.
+- **Preserve runner independence.** Core contracts and workflow policy must not
+  depend on a named LLM, provider, model, host, CLI or SDK. Keep specifics in adapters.
 - **Challenge assumptions with evidence.** Assess proposals independently, including
   the user's. Explain conflicts and trade-offs with facts or clear reasoning;
   distinguish evidence from judgement and uncertainty. Do not agree by default.
