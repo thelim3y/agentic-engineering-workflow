@@ -42,4 +42,5 @@ capability records, and conformance reports.
 
 Early validation uses at least two independent adapters to expose accidental
 coupling. Adding another runner should require an adapter and evidence, not changes
-to workflow policy.
+to workflow policy. The public [runner adapter contract](../runner-adapters.md)
+defines the clean-room authoring and conformance bar.

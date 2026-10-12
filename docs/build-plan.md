@@ -10,7 +10,8 @@ The contracts in the [design index](README.md) own requirements.
    settle the product boundary, repair the conformance harness, and prove at least
    two independent runner adapters against one contract.
 2. [Build the trusted controller](https://github.com/thelim3y/agentic-engineering-workflow/issues/3):
-   records, audit, recovery, configuration, runner adapters, GitHub intake, and planning.
+   records, audit, recovery, configuration, the public runner-adapter contract,
+   GitHub intake, and planning.
 3. [Deliver the protected C++ workflow](https://github.com/thelim3y/agentic-engineering-workflow/issues/4):
    TDD, implementation, independent testing, bounded repair, presets, and Clang.
 4. [Add bounded context and learning](https://github.com/thelim3y/agentic-engineering-workflow/issues/5):

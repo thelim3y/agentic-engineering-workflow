@@ -40,7 +40,8 @@ provider-specific details stay inside the adapter and its evidence.
 
 Runner independence is an architecture rule, not a claim that every runner already
 works. Each adapter/version/OS combination must pass conformance before support is
-claimed.
+claimed. The public [runner adapter contract](runner-adapters.md) defines the
+authoring and acceptance requirements.
 
 ## Contract responsibilities
 
