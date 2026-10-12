@@ -1,6 +1,6 @@
 # Planner
 
-Status: agreed design; not yet implemented.
+Status: design; not yet implemented.
 
 ## Responsibility
 
@@ -76,8 +76,8 @@ implementation work.
 
 ## Decision history
 
-Agreed on 10 October 2026. This replaces the earlier rule that oversized tasks
-always stop for reduction or splitting. XL and above now require approval;
-Large and smaller tasks continue unless another concern requires a pause.
+Decision recorded on 10 October 2026. This replaces the earlier rule that
+oversized tasks always stop for reduction or splitting. XL and above now require
+approval; Large and smaller tasks continue unless another concern requires a pause.
 
 Smaller steps help implementation; they do not reduce the combined PR size.

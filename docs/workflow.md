@@ -1,6 +1,6 @@
 # Workflow and role handoffs
 
-Status: agreed workflow; not implemented. One incoming task aims at one PR.
+Status: design; not implemented. One incoming task aims at one PR.
 Smaller steps and test batches remain within it; no automatic issue/PR splitting.
 
 ## Intake and planning
