@@ -32,6 +32,37 @@ Manual start, oldest-first selection, required eligibility label and terminal ou
 are initial behaviour. Per-role settings inherit shared defaults. Default dispute
 review is one round before escalation. Other numeric defaults remain explicit choices.
 
+## Audit configuration shape
+
+Reserve the following provider-independent shape. Names and defaults remain subject to
+the configuration-schema implementation.
+
+```yaml
+audit:
+  enabled: true # Required. false is invalid.
+  provider: file
+  provider_config: {}
+
+  signing:
+    enabled: false # Reserved; not implemented by the initial file provider.
+    key_provider: null
+    signing_key_ref: null
+    verification_key_ref: null
+    algorithm: null
+
+  encryption:
+    enabled: false # Reserved; not implemented by the initial file provider.
+    key_provider: null
+    key_ref: null
+    algorithm: null
+```
+
+A UI may render the `enabled` values as checkboxes. Key fields are references resolved
+by the configured provider; private keys and other secret material never appear in
+configuration, reports or audit events. Providers declare support for signing,
+encryption, key providers and algorithms. Enabling an unsupported or unimplemented
+option fails configuration validation rather than being ignored.
+
 ## Fixed invariants
 
 No configuration schema or workflow transition may require a named runner,
