@@ -32,6 +32,13 @@ Record observable actions and concise decision reasons. Do not claim access to
 hidden model reasoning or record credentials. Identify unavailable telemetry rather
 than silently calling an incomplete trace complete.
 
+Audit event names are open, namespaced strings. Use `observation.recorded` for a
+useful message or structured event that has no defined type yet. It carries a stable
+observation name, source, concise message, optional structured details and references.
+It is informational: it cannot advance workflow state, satisfy a gate or override a
+defined record. Promote repeated observations to a defined type without rewriting
+their original events.
+
 ## Storage contract
 
 The controller appends ordered run events with unique event and operation identities.
