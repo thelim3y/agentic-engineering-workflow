@@ -6,15 +6,16 @@ The contracts in the [design index](README.md) own requirements.
 
 ## Delivery order
 
-1. Settle the runtime boundary and repair the isolation harness in
+1. In parallel, settle the runtime boundary, repair the isolation harness and run
+   adapter feasibility spikes in
    [trustworthy agent execution](https://github.com/thelim3y/agentic-engineering-workflow/issues/2).
-2. Build the versioned record contract and file audit provider in
-   [the trusted controller](https://github.com/thelim3y/agentic-engineering-workflow/issues/3)
-   before product adapters or controller actions, so later code emits audit records
-   from its first implementation.
-3. Publish the runner contract, then validate at least two independent adapters and
-   implement the remaining controller, recovery, configuration, GitHub intake and
-   planning work from issues #2 and #3.
+2. Make the versioned record contract and file audit provider the first product code
+   in [the trusted controller](https://github.com/thelim3y/agentic-engineering-workflow/issues/3),
+   so later integrated workflow actions emit audit records from their first
+   implementation. This does not block independent feasibility or contract work.
+3. Publish the runner contract and implement controller, recovery, configuration,
+   GitHub intake and planning work. Commission the independent adapters against that
+   integrated boundary before claiming controller completion.
 4. [Deliver the protected C++ workflow](https://github.com/thelim3y/agentic-engineering-workflow/issues/4):
    TDD, implementation, independent testing, bounded repair, presets, and Clang.
 5. [Add bounded context and learning](https://github.com/thelim3y/agentic-engineering-workflow/issues/5):
