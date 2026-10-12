@@ -28,6 +28,13 @@ whole system in their head.
   visible. Avoid surprising defaults and silent fallbacks.
 - **Build what is needed.** Implement agreed requirements; leave speculative
   features and abstractions out of the change.
+- **Treat design as a tested hypothesis.** Design documents record the current
+  direction, not proof that it works. Implementation may expose incorrect assumptions,
+  missing constraints or simpler solutions. Preserve required invariants, but revise
+  the design when evidence warrants it. Never let code and documentation diverge silently.
+- **Keep proposals separate.** Put unsettled alternatives in issues or ADRs with an
+  explicit proposed status. Do not mix them into authoritative contract text; the word
+  `proposed` alone is not a sufficient boundary there.
 - **Keep changes focused.** Separate unrelated fixes, refactors and features.
 - **Use deterministic tools where possible.** Use tools for mechanical checks;
   reserve judgement for questions those tools cannot establish.

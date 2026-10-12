@@ -1,6 +1,6 @@
 # Checkpoints and recovery
 
-Status: agreed behaviour; not yet implemented. Storage and schema remain undecided.
+Status: design; not yet implemented. Storage and schema remain undecided.
 
 ## Purpose
 
