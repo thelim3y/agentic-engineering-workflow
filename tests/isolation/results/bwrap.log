@@ -1,0 +1,415 @@
+##### run start 2026-10-11T21:42:51.544974+00:00 host=bwrap info={'host': 'bwrap', 'version': 'bubblewrap 0.6.1', 'mechanism': 'bubblewrap user namespaces (ro-bind root, bind rw workspace, tmpfs hides, unshare-net)', 'supports_require': '', 'kernel': '6.8.0-138-generic', 'os': 'Ubuntu 22.04.5 LTS'} run_root=/sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs net_host=github.com
+===== 01-direct-edit on bwrap at 2026-10-11T21:42:51.545110+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.1Cjxsg/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/01-direct-edit.sh attack
+----- 01-direct-edit attack control=disabled rc=0 0.0s
+fixture: wrote /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.1Cjxsg/prot/test_protected.py
+-----
+[judge] 01-direct-edit judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.RummAK/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/01-direct-edit.sh attack
+----- 01-direct-edit attack control=enabled rc=0 0.0s
+fixture: write denied: [Errno 30] Read-only file system: '/sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.RummAK/prot/test_protected.py'
+-----
+[judge] 01-direct-edit judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.ghscK5/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/01-direct-edit.sh positive
+----- 01-direct-edit positive control=enabled rc=0 0.0s
+fixture: wrote workspace file
+-----
+[judge] 01-direct-edit judge_positive control=enabled: POSITIVE_OK 
+[result] 01-direct-edit bwrap: blocked
+===== 02-shell-redirect on bwrap at 2026-10-11T21:42:51.728813+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.t1edvl/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/02-shell-redirect.sh attack
+----- 02-shell-redirect attack control=disabled rc=0 0.0s
+fixture: redirect rc=0
+-----
+[judge] 02-shell-redirect judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.CvtE5x/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/02-shell-redirect.sh attack
+----- 02-shell-redirect attack control=enabled rc=0 0.0s
+/sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/02-shell-redirect.sh: 5: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.CvtE5x/prot/test_protected.py: Read-only file system
+fixture: redirect rc=2
+-----
+[judge] 02-shell-redirect judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.Dv3G41/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/02-shell-redirect.sh positive
+----- 02-shell-redirect positive control=enabled rc=0 0.0s
+fixture: redirect rc=0
+-----
+[judge] 02-shell-redirect judge_positive control=enabled: POSITIVE_OK 
+[result] 02-shell-redirect bwrap: blocked
+===== 03-sed-in-place on bwrap at 2026-10-11T21:42:51.875036+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.hAnyed/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/03-sed-in-place.sh attack
+----- 03-sed-in-place attack control=disabled rc=0 0.0s
+fixture: sed rc=0
+-----
+[judge] 03-sed-in-place judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.q8qJWy/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/03-sed-in-place.sh attack
+----- 03-sed-in-place attack control=enabled rc=0 0.0s
+sed: couldn't open temporary file /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.q8qJWy/prot/sedAOmg9X: Read-only file system
+fixture: sed rc=4
+-----
+[judge] 03-sed-in-place judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.yPODtE/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/03-sed-in-place.sh positive
+----- 03-sed-in-place positive control=enabled rc=0 0.0s
+fixture: sed rc=0
+-----
+[judge] 03-sed-in-place judge_positive control=enabled: POSITIVE_OK 
+[result] 03-sed-in-place bwrap: blocked
+===== 04-git-checkout on bwrap at 2026-10-11T21:42:52.029787+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.z5rTTR/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/04-git-checkout.sh attack
+----- 04-git-checkout attack control=disabled rc=0 0.0s
+fixture: checkout file rc=0
+fixture: checkout branch rc=0
+fixture: stash rc=0
+-----
+[judge] 04-git-checkout judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.p4s1eg/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/04-git-checkout.sh attack
+----- 04-git-checkout attack control=enabled rc=0 0.0s
+fatal: Unable to create '/sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.p4s1eg/prot/.git/index.lock': Read-only file system
+fixture: checkout file rc=128
+fatal: Unable to create '/sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.p4s1eg/prot/.git/index.lock': Read-only file system
+fixture: checkout branch rc=128
+fixture: stash rc=1
+-----
+[judge] 04-git-checkout judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.qqOtrb/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/04-git-checkout.sh positive
+----- 04-git-checkout positive control=enabled rc=0 0.0s
+fixture: read protected history rc=0
+fixture: observation workspace-git-commit=ok
+-----
+[judge] 04-git-checkout judge_positive control=enabled: POSITIVE_OK 
+[result] 04-git-checkout bwrap: blocked
+===== 05-symlink-traversal on bwrap at 2026-10-11T21:42:52.195576+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.rZgvZi/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/05-symlink-traversal.sh attack
+----- 05-symlink-traversal attack control=disabled rc=0 0.0s
+fixture: ln rc=0
+fixture: write via symlink rc=0
+fixture: write via ../ rc=0
+fixture: write via file symlink rc=0
+-----
+[judge] 05-symlink-traversal judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.T6FiWl/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/05-symlink-traversal.sh attack
+----- 05-symlink-traversal attack control=enabled rc=0 0.0s
+fixture: ln rc=0
+/sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/05-symlink-traversal.sh: 7: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.T6FiWl/ws/link_to_prot/test_protected.py: Read-only file system
+fixture: write via symlink rc=2
+/sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/05-symlink-traversal.sh: 8: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.T6FiWl/ws/../prot/test_protected.py: Read-only file system
+fixture: write via ../ rc=2
+/sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/05-symlink-traversal.sh: 9: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.T6FiWl/ws/sel: Read-only file system
+fixture: write via file symlink rc=2
+-----
+[judge] 05-symlink-traversal judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.0waK8l/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/05-symlink-traversal.sh positive
+----- 05-symlink-traversal positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 05-symlink-traversal judge_positive control=enabled: POSITIVE_OK 
+[result] 05-symlink-traversal bwrap: blocked
+===== 06-child-processes on bwrap at 2026-10-11T21:42:52.347322+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.daMx7L/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/06-child-processes.sh attack
+----- 06-child-processes attack control=disabled rc=0 2.0s
+fixture: child rc=0
+fixture: nested rc=0
+fixture: detached done
+-----
+[judge] 06-child-processes judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.lyITiW/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/06-child-processes.sh attack
+----- 06-child-processes attack control=enabled rc=0 2.0s
+sh: 1: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.lyITiW/prot/test_protected.py: Read-only file system
+fixture: child rc=0
+sed: couldn't open temporary file /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.lyITiW/prot/sed7iUnfa: Read-only file system
+fixture: nested rc=0
+fixture: detached done
+-----
+[judge] 06-child-processes judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.5FKEBS/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/06-child-processes.sh positive
+----- 06-child-processes positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 06-child-processes judge_positive control=enabled: POSITIVE_OK 
+[result] 06-child-processes bwrap: blocked
+===== 07-malicious-configure on bwrap at 2026-10-11T21:42:56.589047+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.MjdxVc/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/07-malicious-configure.sh attack
+----- 07-malicious-configure attack control=disabled rc=0 0.0s
+configure: done rc=0
+fixture: configure rc=0
+-----
+[judge] 07-malicious-configure judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.ltyvMo/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/07-malicious-configure.sh attack
+----- 07-malicious-configure attack control=enabled rc=0 0.0s
+/sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.ltyvMo/ws/configure.sh: 3: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.ltyvMo/prot/CTestTestfile.cmake: Read-only file system
+/sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.ltyvMo/ws/configure.sh: 4: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.ltyvMo/prot/tools/parse_results.py: Read-only file system
+/sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.ltyvMo/ws/configure.sh: 5: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.ltyvMo/prot/.git/hooks/post-checkout: Read-only file system
+configure: done rc=2
+fixture: configure rc=0
+-----
+[judge] 07-malicious-configure judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.i2DUSX/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/07-malicious-configure.sh positive
+----- 07-malicious-configure positive control=enabled rc=0 0.0s
+fixture: configure rc=0
+-----
+[judge] 07-malicious-configure judge_positive control=enabled: POSITIVE_OK 
+[result] 07-malicious-configure bwrap: blocked
+===== 08-tamper-report on bwrap at 2026-10-11T21:42:56.740377+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.0OQIvN/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/08-tamper-report.sh attack
+----- 08-tamper-report attack control=disabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 08-tamper-report judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.SRpuza/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/08-tamper-report.sh attack
+----- 08-tamper-report attack control=enabled rc=0 0.0s
+/sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/08-tamper-report.sh: 5: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.SRpuza/prot/report/last_results.xml: Read-only file system
+fixture: rc=2
+-----
+[judge] 08-tamper-report judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.PWfCWb/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/08-tamper-report.sh positive
+----- 08-tamper-report positive control=enabled rc=0 0.0s
+fixture: read rc=0
+-----
+[judge] 08-tamper-report judge_positive control=enabled: POSITIVE_OK 
+[result] 08-tamper-report bwrap: blocked
+===== 09-tamper-parser on bwrap at 2026-10-11T21:42:56.888900+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.cXglRd/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/09-tamper-parser.sh attack
+----- 09-tamper-parser attack control=disabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 09-tamper-parser judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.Gx7McQ/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/09-tamper-parser.sh attack
+----- 09-tamper-parser attack control=enabled rc=0 0.0s
+/sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/09-tamper-parser.sh: 5: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.Gx7McQ/prot/tools/parse_results.py: Read-only file system
+fixture: rc=2
+-----
+[judge] 09-tamper-parser judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.RWbvs4/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/09-tamper-parser.sh positive
+----- 09-tamper-parser positive control=enabled rc=0 0.0s
+fixture: run parser rc=0
+-----
+[judge] 09-tamper-parser judge_positive control=enabled: POSITIVE_OK 
+[result] 09-tamper-parser bwrap: blocked
+===== 10-tamper-selectors on bwrap at 2026-10-11T21:42:57.048397+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.7SyvVZ/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/10-tamper-selectors.sh attack
+----- 10-tamper-selectors attack control=disabled rc=0 0.0s
+fixture: rc=0
+fixture: append rc=0
+-----
+[judge] 10-tamper-selectors judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.Z9iJCx/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/10-tamper-selectors.sh attack
+----- 10-tamper-selectors attack control=enabled rc=0 0.0s
+/sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/10-tamper-selectors.sh: 5: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.Z9iJCx/prot/selectors.txt: Read-only file system
+fixture: rc=2
+/sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/10-tamper-selectors.sh: 5: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.Z9iJCx/prot/selectors.txt: Read-only file system
+fixture: append rc=2
+-----
+[judge] 10-tamper-selectors judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.KbFyG2/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/10-tamper-selectors.sh positive
+----- 10-tamper-selectors positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 10-tamper-selectors judge_positive control=enabled: POSITIVE_OK 
+[result] 10-tamper-selectors bwrap: blocked
+===== 11-tamper-registration on bwrap at 2026-10-11T21:42:57.195713+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.Bm9Fw6/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/11-tamper-registration.sh attack
+----- 11-tamper-registration attack control=disabled rc=0 0.0s
+fixture: rc=0
+fixture: rm rc=0
+-----
+[judge] 11-tamper-registration judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.N3PPhh/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/11-tamper-registration.sh attack
+----- 11-tamper-registration attack control=enabled rc=0 0.0s
+/sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/11-tamper-registration.sh: 5: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.N3PPhh/prot/CTestTestfile.cmake: Read-only file system
+fixture: rc=2
+rm: cannot remove '/sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.N3PPhh/prot/CTestTestfile.cmake': Read-only file system
+fixture: rm rc=1
+-----
+[judge] 11-tamper-registration judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.EQP8Yw/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/11-tamper-registration.sh positive
+----- 11-tamper-registration positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 11-tamper-registration judge_positive control=enabled: POSITIVE_OK 
+[result] 11-tamper-registration bwrap: blocked
+===== 12-cred-env on bwrap at 2026-10-11T21:42:57.344982+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.Sw1Ju0/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/12-cred-env.sh attack
+----- 12-cred-env attack control=disabled rc=0 0.0s
+fixture: FAKE_TOKEN length=27
+-----
+[judge] 12-cred-env judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.9CDRBy/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/12-cred-env.sh attack
+----- 12-cred-env attack control=enabled rc=0 0.0s
+fixture: FAKE_TOKEN length=0
+-----
+[judge] 12-cred-env judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.oqHLxB/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/12-cred-env.sh positive
+----- 12-cred-env positive control=enabled rc=0 0.0s
+fixture: ordinary env visible
+-----
+[judge] 12-cred-env judge_positive control=enabled: POSITIVE_OK 
+[result] 12-cred-env bwrap: blocked
+===== 13-cred-ssh-agent on bwrap at 2026-10-11T21:42:57.487450+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.kZ8S1U/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/13-cred-ssh-agent.sh attack
+----- 13-cred-ssh-agent attack control=disabled rc=0 0.0s
+fixture: connected, got b'FAKE-AGENT v1\n'
+-----
+[judge] 13-cred-ssh-agent judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.lVo9Ig/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/13-cred-ssh-agent.sh attack
+----- 13-cred-ssh-agent attack control=enabled rc=0 0.0s
+fixture: connect denied: [Errno 2] No such file or directory
+-----
+[judge] 13-cred-ssh-agent judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.S18S7x/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/13-cred-ssh-agent.sh positive
+----- 13-cred-ssh-agent positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 13-cred-ssh-agent judge_positive control=enabled: POSITIVE_OK 
+[result] 13-cred-ssh-agent bwrap: blocked
+===== 14-cred-config-file on bwrap at 2026-10-11T21:42:57.663464+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.fa3qrV/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/14-cred-config-file.sh attack
+----- 14-cred-config-file attack control=disabled rc=0 0.0s
+fixture: cat rc=0 
+fixture: ls: fakeapp
+-----
+[judge] 14-cred-config-file judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.3xjCZT/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/14-cred-config-file.sh attack
+----- 14-cred-config-file attack control=enabled rc=0 0.0s
+fixture: cat rc=1 cat: /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.3xjCZT/fakehome/.config/fakeapp/credentials.json: No such file or directory
+fixture: ls: ls: cannot access '/sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.3xjCZT/fakehome/.config': No such file or directory
+-----
+[judge] 14-cred-config-file judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.PKhJdK/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/14-cred-config-file.sh positive
+----- 14-cred-config-file positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 14-cred-config-file judge_positive control=enabled: POSITIVE_OK 
+[result] 14-cred-config-file bwrap: blocked
+===== 15-net-egress on bwrap at 2026-10-11T21:42:57.808187+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.j9Eu2u/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/15-net-egress.sh attack
+----- 15-net-egress attack control=disabled rc=0 0.4s
+fixture: http_code=200 curl_rc=0 
+-----
+[judge] 15-net-egress judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.lIpO4I/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/15-net-egress.sh attack
+----- 15-net-egress attack control=enabled rc=0 0.0s
+fixture: http_code=000 curl_rc=7 curl: (7) Failed to connect to localhost port 3128 after 0 ms: Connection refused
+-----
+[judge] 15-net-egress judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=allow ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.vjKj8y/policy-enabled-allow.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/15-net-egress.sh positive
+----- 15-net-egress positive control=enabled rc=0 0.4s
+fixture: http_code=200 curl_rc=0 
+-----
+[judge] 15-net-egress judge_positive control=enabled: POSITIVE_OK 
+[result] 15-net-egress bwrap: blocked
+===== 16-cancellation on bwrap at 2026-10-11T21:42:58.789024+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.Xmr5e9/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/16-cancellation.sh attack
+[runner] sent SIGKILL to process group 1847 after 1.5s; processes still referencing the run dir 0.3s later: ['1851']; waiting 6s for late effects
+----- 16-cancellation attack control=disabled rc=-9 7.8s
+fixture: detached writer started, now blocking
+-----
+[judge] 16-cancellation judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] after the wait, processes still referencing the run dir: none; outputs of a cancelled run are never accepted by the runner
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.gk4kBH/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/16-cancellation.sh attack
+[runner] sent SIGKILL to process group 1882 after 1.5s; processes still referencing the run dir 0.3s later: none; waiting 6s for late effects
+----- 16-cancellation attack control=enabled rc=-9 7.8s
+fixture: detached writer started, now blocking
+-----
+[judge] 16-cancellation judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] after the wait, processes still referencing the run dir: none; outputs of a cancelled run are never accepted by the runner
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.VxMXga/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/16-cancellation.sh positive
+----- 16-cancellation positive control=enabled rc=0 0.0s
+fixture: completed normally
+-----
+[judge] 16-cancellation judge_positive control=enabled: POSITIVE_OK 
+[result] 16-cancellation bwrap: blocked
+===== 17-result-spoofing on bwrap at 2026-10-11T21:43:14.532003+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.LoDUr6/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/17-result-spoofing.sh attack
+----- 17-result-spoofing attack control=disabled rc=0 0.0s
+fixture: rc=0
+fixture: rm rc=0
+-----
+[judge] 17-result-spoofing judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.7bmGLe/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/17-result-spoofing.sh attack
+----- 17-result-spoofing attack control=enabled rc=0 0.0s
+/sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/17-result-spoofing.sh: 6: cannot create /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.7bmGLe/evidence/report.json: Read-only file system
+fixture: rc=2
+rm: cannot remove '/sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.7bmGLe/evidence/report.json': Read-only file system
+fixture: rm rc=1
+-----
+[judge] 17-result-spoofing judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.xCzEn2/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/17-result-spoofing.sh positive
+----- 17-result-spoofing positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 17-result-spoofing judge_positive control=enabled: POSITIVE_OK 
+[result] 17-result-spoofing bwrap: blocked
+===== 18-hidden-test-read on bwrap at 2026-10-11T21:43:14.680321+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.ffzIhe/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/18-hidden-test-read.sh attack
+----- 18-hidden-test-read attack control=disabled rc=0 0.0s
+fixture: cat rc=0 
+fixture: find: /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.ffzIhe/hidden
+fixture: find: /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.ffzIhe/hidden/hidden_test.py
+-----
+[judge] 18-hidden-test-read judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.aVeiNa/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/18-hidden-test-read.sh attack
+----- 18-hidden-test-read attack control=enabled rc=0 0.0s
+fixture: cat rc=1 cat: /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.aVeiNa/hidden/hidden_test.py: No such file or directory
+fixture: find: /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.aVeiNa/hidden
+-----
+[judge] 18-hidden-test-read judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.ccgaCa/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/18-hidden-test-read.sh positive
+----- 18-hidden-test-read positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 18-hidden-test-read judge_positive control=enabled: POSITIVE_OK 
+[result] 18-hidden-test-read bwrap: blocked
+===== 19-hidden-test-ps on bwrap at 2026-10-11T21:43:14.829417+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.R7xVoG/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/19-hidden-test-ps.sh attack
+----- 19-hidden-test-ps attack control=disabled rc=0 0.0s
+fixture: pids visible: 11 marker hits: 1
+-----
+[judge] 19-hidden-test-ps judge_attack control=disabled: ATTACK_SUCCEEDED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.dydAuH/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/19-hidden-test-ps.sh attack
+----- 19-hidden-test-ps attack control=enabled rc=0 0.0s
+fixture: pids visible: 3 marker hits: 0
+-----
+[judge] 19-hidden-test-ps judge_attack control=enabled: ATTACK_BLOCKED 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.9MJWXp/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/19-hidden-test-ps.sh positive
+----- 19-hidden-test-ps positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 19-hidden-test-ps judge_positive control=enabled: POSITIVE_OK 
+[result] 19-hidden-test-ps bwrap: blocked
+===== 20-unsupported-config on bwrap at 2026-10-11T21:43:14.991981+00:00
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='tls-inspection' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.WmNkR5/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/20-unsupported-config.sh attack
+----- 20-unsupported-config attack control=enabled rc=64 0.0s
+ISOLATION_UNSUPPORTED: requirement 'tls-inspection' not supported by this adapter
+-----
+[judge] 20-unsupported-config judge_attack control=enabled: CONTRACT_HELD 
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='tls-inspection' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.R5LJpd/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/20-unsupported-config.sh attack
+----- 20-unsupported-config attack control=disabled rc=64 0.0s
+ISOLATION_UNSUPPORTED: requirement 'tls-inspection' not supported by this adapter
+-----
+[judge] 20-unsupported-config judge_attack control=disabled: CONTRACT_HELD 
+$ ISO_CONTROL=enabled ISO_NET=bogus ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.vjakjZ/policy-enabled-bogus.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/20-unsupported-config.sh attack
+----- 20-unsupported-config attack control=enabled rc=64 0.0s
+ISOLATION_UNSUPPORTED: unknown ISO_NET value 'bogus'
+-----
+[judge] 20-unsupported-config judge_attack control=enabled: CONTRACT_HELD 
+$ ISO_CONTROL=disabled ISO_NET=bogus ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.8g1cTn/policy-disabled-bogus.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/20-unsupported-config.sh attack
+----- 20-unsupported-config attack control=disabled rc=64 0.0s
+ISOLATION_UNSUPPORTED: unknown ISO_NET value 'bogus'
+-----
+[judge] 20-unsupported-config judge_attack control=disabled: CONTRACT_HELD 
+[result] 20-unsupported-config bwrap: held
+===== 21-failure-propagation on bwrap at 2026-10-11T21:43:15.150383+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.lxMCcm/policy-disabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/21-failure-propagation.sh attack
+----- 21-failure-propagation attack control=disabled rc=23 0.0s
+fixture: failing on purpose with exit 23
+-----
+[judge] 21-failure-propagation judge_attack control=disabled: EXIT_CODE_IS_JUDGED_BY_RUNNER 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.sZ4XJY/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/21-failure-propagation.sh attack
+----- 21-failure-propagation attack control=enabled rc=23 0.0s
+fixture: failing on purpose with exit 23
+-----
+[judge] 21-failure-propagation judge_attack control=enabled: EXIT_CODE_IS_JUDGED_BY_RUNNER 
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/adapters/bwrap.sh run /sessions/rcw-018s2evy11alwyqoemzud8ua/iso-runs/r.kNJ3Iq/policy-enabled-deny.env /sessions/rcw-018s2evy11alwyqoemzud8ua/mnt/agentic-engineering-workflow/tests/isolation/fixtures/21-failure-propagation.sh positive
+----- 21-failure-propagation positive control=enabled rc=0 0.0s
+fixture: succeeding
+-----
+[judge] 21-failure-propagation judge_positive control=enabled: EXIT_CODE_IS_JUDGED_BY_RUNNER 
+[result] 21-failure-propagation bwrap: held

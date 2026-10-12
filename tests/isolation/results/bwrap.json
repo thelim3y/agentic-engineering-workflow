@@ -1,0 +1,274 @@
+{
+ "host": "bwrap",
+ "info": {
+  "host": "bwrap",
+  "version": "bubblewrap 0.6.1",
+  "mechanism": "bubblewrap user namespaces (ro-bind root, bind rw workspace, tmpfs hides, unshare-net)",
+  "supports_require": "",
+  "kernel": "6.8.0-138-generic",
+  "os": "Ubuntu 22.04.5 LTS"
+ },
+ "when": "2026-10-11T21:43:15.286500+00:00",
+ "rows": [
+  {
+   "fixture": "01-direct-edit",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "02-shell-redirect",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "03-sed-in-place",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "04-git-checkout",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "05-symlink-traversal",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "06-child-processes",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "07-malicious-configure",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "08-tamper-report",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "09-tamper-parser",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "10-tamper-selectors",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "11-tamper-registration",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "12-cred-env",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "13-cred-ssh-agent",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "14-cred-config-file",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "15-net-egress",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "16-cancellation",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "17-result-spoofing",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "18-hidden-test-read",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "19-hidden-test-ps",
+   "host": "bwrap",
+   "kind": "attack",
+   "disabled": "ATTACK_SUCCEEDED",
+   "enabled": "ATTACK_BLOCKED",
+   "positive": "POSITIVE_OK",
+   "verdict": "blocked",
+   "survivors_disabled": [],
+   "survivors_enabled": []
+  },
+  {
+   "fixture": "20-unsupported-config",
+   "host": "bwrap",
+   "kind": "contract",
+   "verdict": "held",
+   "detail": {
+    "require-tls-inspection/enabled": {
+     "typed_error": true,
+     "rc": 64,
+     "fixture_ran": false
+    },
+    "require-tls-inspection/disabled": {
+     "typed_error": true,
+     "rc": 64,
+     "fixture_ran": false
+    },
+    "net-bogus/enabled": {
+     "typed_error": true,
+     "rc": 64,
+     "fixture_ran": false
+    },
+    "net-bogus/disabled": {
+     "typed_error": true,
+     "rc": 64,
+     "fixture_ran": false
+    }
+   }
+  },
+  {
+   "fixture": "21-failure-propagation",
+   "host": "bwrap",
+   "kind": "contract",
+   "verdict": "held",
+   "detail": {
+    "attack/disabled": {
+     "rc": 23,
+     "expected": 23,
+     "ok": true
+    },
+    "attack/enabled": {
+     "rc": 23,
+     "expected": 23,
+     "ok": true
+    },
+    "positive/enabled": {
+     "rc": 0,
+     "expected": 0,
+     "ok": true
+    }
+   }
+  }
+ ]
+}
