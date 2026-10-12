@@ -11,7 +11,7 @@ import stat
 import time
 from uuid import uuid4
 
-from .v1 import AuditErrorV1, EventV1, ReceiptV1, VerificationV1, canonical_json
+from .events_v1 import AuditErrorV1, EventV1, ReceiptV1, VerificationV1, canonical_json
 
 
 _ZERO = "0" * 64

@@ -12,8 +12,8 @@ from unittest.mock import patch
 from uuid import UUID
 
 from aew.audit.file_v1 import FileAuditV1
-from aew.audit.v1 import AuditErrorV1
-from test_v1 import event
+from aew.audit.events_v1 import AuditErrorV1
+from test_events_v1 import event
 
 
 def append_worker(path, workspace, number):
@@ -181,7 +181,7 @@ class FileTests(unittest.TestCase):
         script = """
 import os, sys
 from aew.audit.file_v1 import FileAuditV1
-from aew.audit.v1 import EventV1
+from aew.audit.events_v1 import EventV1
 import json
 provider = FileAuditV1(sys.argv[1], workspace_roots=[sys.argv[2]])
 inode = os.stat(sys.argv[1] + '/events.jsonl').st_ino

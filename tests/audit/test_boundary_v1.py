@@ -9,7 +9,7 @@ import tempfile
 import unittest
 
 from aew.audit.file_v1 import FileAuditV1
-from test_v1 import event
+from test_events_v1 import event
 
 
 _ATTACK = """

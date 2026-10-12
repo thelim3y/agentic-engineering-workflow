@@ -6,7 +6,7 @@ import json
 import sys
 
 from .file_v1 import FileAuditV1
-from .v1 import AuditErrorV1, EventV1
+from .events_v1 import AuditErrorV1, EventV1
 
 
 class _Parser(argparse.ArgumentParser):
