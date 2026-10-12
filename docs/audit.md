@@ -47,6 +47,11 @@ content fails. Accepted artifacts have immutable content identities and access l
 Mutable paths alone are not evidence references. A hash is not a substitute for
 retaining the bytes needed to inspect or recover the work.
 
+Audit providers own their storage protection. The common configuration reserves
+optional signing and encryption controls with provider-owned key references. The
+initial file provider does not implement either option; requesting one must fail
+configuration validation. Integrity checks and agent isolation remain required.
+
 Publish referenced artifacts before accepting the event that relies on them. Retain
 the durable event position in every checkpoint. Never publish completed state ahead
 of its audit coverage; use atomic publication or a write-ahead/reconciliation protocol.
