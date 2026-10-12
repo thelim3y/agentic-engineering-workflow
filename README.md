@@ -4,8 +4,9 @@ A configurable, model-agnostic software factory for native applications. It cove
 planning, TDD, implementation, independent testing, review, PR creation, and gated
 merge.
 
-**Status:** design and feasibility stage. The contracts and isolation spike exist;
-the factory does not.
+**Status:** design and feasibility stage with a working
+[v1 file audit slice](docs/audit-v1.md). The contracts and isolation spike exist;
+the full factory does not.
 
 ## Start here
 

@@ -1,7 +1,8 @@
 # Communication and evidence contract
 
-Status: authoritative v1 design semantics; serialization schema and validators are
-not implemented. This replaces the legacy agent/ticket/verdict header. Guides link
+Status: authoritative v1 design semantics. The minimal [audit envelope](audit-v1.md)
+is implemented; full record schemas and validators remain planned. This replaces
+the legacy agent/ticket/verdict header. Guides link
 here rather than maintaining alternate field lists.
 
 ## Common identity
