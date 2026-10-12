@@ -8,21 +8,24 @@ an exhaustive support list.
 
 ## Current evidence
 
-The corrected Linux run is preserved in
+The prior Linux run is preserved in
 [tests/isolation/results/linux-2026-10-12](../../tests/isolation/results/linux-2026-10-12/README.md).
+It predates the issue 9 harness-integrity repairs and is historical evidence, not
+current commissioning evidence. The adapters require a fresh run.
 
 | Boundary | Result | Proven scope |
 |---|---|---|
-| bubblewrap 0.9.0 | 22/22 pass | Shared shell/build fixtures |
-| Codex CLI 0.156.1 sandbox | 22/22 pass | The same shell/build fixtures |
+| bubblewrap 0.9.0 | Historical 22/22; revalidation required | Earlier shell/build harness |
+| Codex CLI 0.156.1 sandbox | Historical 22/22; revalidation required | Earlier shell/build harness |
 | Claude Code sandbox | Not run | None on the current host |
 | Codex agent session | Not run | Native editing, MCP, model identity, and structured output unproven |
 | Claude Code agent session | Not run | Native editing, MCP, model identity, and structured output unproven |
 
 The suite checks disabled, enabled, and positive controls. It covers direct and
-indirect writes, subprocesses, credentials, network policy, cancellation, result
-spoofing, hidden-test reads, unsupported policy, exit propagation, and real CMake
-configure-time code.
+indirect writes, subprocesses, credentials, fixed-destination HTTPS reachability,
+cancellation, result spoofing, hidden-test reads, unsupported policy, exit
+propagation, and real CMake configure-time code. These are fixture-specific claims,
+not proof of general filesystem or network containment.
 
 ## Limits
 
@@ -39,7 +42,8 @@ configure-time code.
 
 Do not select a production execution boundary yet. Complete:
 
-- [harness integrity repairs](https://github.com/thelim3y/agentic-engineering-workflow/issues/9);
+- fresh evidence from the repaired harness in
+  [issue 9](https://github.com/thelim3y/agentic-engineering-workflow/issues/9);
 - [Claude Code session proof](https://github.com/thelim3y/agentic-engineering-workflow/issues/10);
 - [Codex session proof](https://github.com/thelim3y/agentic-engineering-workflow/issues/11).
 

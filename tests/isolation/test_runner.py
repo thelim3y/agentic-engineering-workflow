@@ -5,6 +5,7 @@ Run with: python3 -B -m unittest discover -s tests/isolation -p 'test_*.py'
 import contextlib
 import importlib.util
 import io
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -22,10 +23,52 @@ def phase(verdict, **changes):
         "rc": 0, "verdict": verdict, "judge_rc": 0, "started": True,
         "timed_out": False, "drain_complete": True, "cancelled": False,
         "survivors": [], "descendants_verified": True, "unsupported": False,
-        "output_tail": "",
+        "output_truncated": False, "output_prefix": "",
     }
     result.update(changes)
     return result
+
+
+class ProtectedSnapshotTests(unittest.TestCase):
+    def test_snapshot_changes_with_content_and_metadata(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            item = root / "input.txt"
+            item.write_text("first")
+            initial = runner.tree_digest(root)
+            item.write_text("second")
+            content_changed = runner.tree_digest(root)
+            item.chmod(0o400)
+            metadata_changed = runner.tree_digest(root)
+        self.assertNotEqual(initial, content_changed)
+        self.assertNotEqual(content_changed, metadata_changed)
+
+    def test_unreadable_input_fails_snapshot(self):
+        with tempfile.TemporaryDirectory() as directory:
+            item = Path(directory) / "input.txt"
+            item.write_text("protected")
+            real_open = os.open
+
+            def deny_target(path, flags, *args, **kwargs):
+                if os.fspath(path) == os.fspath(item):
+                    raise PermissionError("synthetic unreadable input")
+                return real_open(path, flags, *args, **kwargs)
+
+            with mock.patch.object(runner.os, "open", side_effect=deny_target):
+                with self.assertRaisesRegex(RuntimeError, "cannot snapshot"):
+                    runner.tree_digest(Path(directory))
+
+    @unittest.skipUnless(hasattr(os, "mkfifo"), "requires POSIX fifo support")
+    def test_unsupported_input_type_fails_snapshot(self):
+        with tempfile.TemporaryDirectory() as directory:
+            os.mkfifo(Path(directory) / "unexpected.fifo")
+            with self.assertRaisesRegex(RuntimeError, "unsupported input type"):
+                runner.tree_digest(Path(directory))
+
+    def test_input_changing_between_passes_fails_snapshot(self):
+        with mock.patch.object(runner, "_tree_manifest", side_effect=[b"first", b"second"]):
+            with self.assertRaisesRegex(RuntimeError, "changed while being snapshotted"):
+                runner.tree_digest(Path("unused"))
 
 
 class FixtureVerdictTests(unittest.TestCase):
@@ -52,6 +95,17 @@ class FixtureVerdictTests(unittest.TestCase):
     def test_exact_blocked_verdict_and_valid_controls_pass(self):
         self.assertEqual(self.attack()["verdict"], "blocked")
 
+    def test_snapshot_or_phase_exception_is_untested(self):
+        subject = runner.Runner.__new__(runner.Runner)
+        subject.host = "fake"
+        subject.rows = []
+        subject.log = mock.Mock()
+        subject.cleanup = mock.Mock()
+        subject.run_phase = mock.Mock(side_effect=RuntimeError("snapshot failed"))
+        with mock.patch.object(runner, "Env"):
+            row = subject.run_fixture(Path("01-direct-edit.sh"))
+        self.assertEqual(row["verdict"], "untested")
+
     def test_denied_attack_may_exit_nonzero_after_starting(self):
         self.assertEqual(self.attack(enabled=phase("ATTACK_BLOCKED", rc=1))["verdict"], "blocked")
 
@@ -71,14 +125,16 @@ class FixtureVerdictTests(unittest.TestCase):
                 self.assertNotPassing(self.attack(enabled=phase("ATTACK_BLOCKED", **fields)))
 
     def test_missing_phase_evidence_never_defaults_to_success(self):
-        for key in ("judge_rc", "started", "drain_complete", "descendants_verified", "timed_out"):
+        for key in ("judge_rc", "started", "drain_complete", "output_truncated",
+                    "descendants_verified", "timed_out"):
             with self.subTest(field=key):
                 enabled = phase("ATTACK_BLOCKED")
                 del enabled[key]
                 self.assertNotPassing(self.attack(enabled=enabled))
 
     def test_timeout_or_incomplete_drain_never_passes(self):
-        for fields in ({"timed_out": True}, {"drain_complete": False}):
+        for fields in ({"timed_out": True}, {"drain_complete": False},
+                       {"output_truncated": True}):
             with self.subTest(fields=fields):
                 self.assertNotPassing(self.attack(enabled=phase("ATTACK_BLOCKED", **fields)))
 
