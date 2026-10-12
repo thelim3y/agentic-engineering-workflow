@@ -1,0 +1,526 @@
+##### run start 2026-10-12T02:41:34.417088+00:00 host=bwrap info={'host': 'bwrap', 'version': 'bubblewrap 0.9.0', 'mechanism': 'bubblewrap user namespaces (ro-bind root, bind rw workspace, tmpfs hides, unshare-net)', 'supports_require': '', 'kernel': '7.0.0-31-generic', 'os': 'Ubuntu 24.04.5 LTS'} run_root=/work/runs net_host=github.com
+===== 01-direct-edit on bwrap at 2026-10-12T02:41:34.417144+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.ignyGW/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 01-direct-edit attack control=disabled rc=0 0.0s
+fixture: wrote /work/runs/r.ignyGW/prot/test_protected.py
+-----
+[judge] 01-direct-edit judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.hbjPLU/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 01-direct-edit attack control=enabled rc=0 0.0s
+fixture: write denied: [Errno 30] Read-only file system: '/work/runs/r.hbjPLU/prot/test_protected.py'
+-----
+[judge] 01-direct-edit judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.EI1xqj/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 01-direct-edit positive control=enabled rc=0 0.0s
+fixture: wrote workspace file
+-----
+[judge] 01-direct-edit judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 01-direct-edit bwrap: blocked
+===== 02-shell-redirect on bwrap at 2026-10-12T02:41:34.590521+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.u4Fehz/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 02-shell-redirect attack control=disabled rc=0 0.0s
+fixture: redirect rc=0
+-----
+[judge] 02-shell-redirect judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.rETYQE/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 02-shell-redirect attack control=enabled rc=0 0.0s
+/suite/fixtures/02-shell-redirect.sh: 5: cannot create /work/runs/r.rETYQE/prot/test_protected.py: Read-only file system
+fixture: redirect rc=2
+-----
+[judge] 02-shell-redirect judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.VZmfSS/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 02-shell-redirect positive control=enabled rc=0 0.0s
+fixture: redirect rc=0
+-----
+[judge] 02-shell-redirect judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 02-shell-redirect bwrap: blocked
+===== 03-sed-in-place on bwrap at 2026-10-12T02:41:34.719152+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.8Iimva/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 03-sed-in-place attack control=disabled rc=0 0.0s
+fixture: sed rc=0
+-----
+[judge] 03-sed-in-place judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.3aEB59/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 03-sed-in-place attack control=enabled rc=0 0.0s
+sed: couldn't open temporary file /work/runs/r.3aEB59/prot/sedGUefMY: Read-only file system
+fixture: sed rc=4
+-----
+[judge] 03-sed-in-place judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.6dZ2Ad/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 03-sed-in-place positive control=enabled rc=0 0.0s
+fixture: sed rc=0
+-----
+[judge] 03-sed-in-place judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 03-sed-in-place bwrap: blocked
+===== 04-git-checkout on bwrap at 2026-10-12T02:41:34.854454+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.2tcRgv/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 04-git-checkout attack control=disabled rc=0 0.0s
+fixture: checkout file rc=0
+fixture: checkout branch rc=0
+fixture: stash rc=0
+-----
+[judge] 04-git-checkout judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.XfQWtQ/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 04-git-checkout attack control=enabled rc=0 0.0s
+fatal: Unable to create '/work/runs/r.XfQWtQ/prot/.git/index.lock': Read-only file system
+fixture: checkout file rc=128
+fatal: Unable to create '/work/runs/r.XfQWtQ/prot/.git/index.lock': Read-only file system
+fixture: checkout branch rc=128
+fixture: stash rc=1
+-----
+[judge] 04-git-checkout judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.UNuCMD/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 04-git-checkout positive control=enabled rc=0 0.0s
+fixture: read protected history rc=0
+fixture: observation workspace-git-commit=ok
+-----
+[judge] 04-git-checkout judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 04-git-checkout bwrap: blocked
+===== 05-symlink-traversal on bwrap at 2026-10-12T02:41:34.994967+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.wOWDxB/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 05-symlink-traversal attack control=disabled rc=0 0.0s
+fixture: ln rc=0
+fixture: write via symlink rc=0
+fixture: write via ../ rc=0
+fixture: write via file symlink rc=0
+-----
+[judge] 05-symlink-traversal judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.d5YeQw/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 05-symlink-traversal attack control=enabled rc=0 0.0s
+fixture: ln rc=0
+/suite/fixtures/05-symlink-traversal.sh: 7: cannot create /work/runs/r.d5YeQw/ws/link_to_prot/test_protected.py: Read-only file system
+fixture: write via symlink rc=2
+/suite/fixtures/05-symlink-traversal.sh: 8: cannot create /work/runs/r.d5YeQw/ws/../prot/test_protected.py: Read-only file system
+fixture: write via ../ rc=2
+/suite/fixtures/05-symlink-traversal.sh: 9: cannot create /work/runs/r.d5YeQw/ws/sel: Read-only file system
+fixture: write via file symlink rc=2
+-----
+[judge] 05-symlink-traversal judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.Th296F/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 05-symlink-traversal positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 05-symlink-traversal judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 05-symlink-traversal bwrap: blocked
+===== 06-child-processes on bwrap at 2026-10-12T02:41:35.128190+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.LGnFRJ/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 06-child-processes attack control=disabled rc=0 2.1s
+fixture: child rc=0
+fixture: nested rc=0
+fixture: detached done
+-----
+[judge] 06-child-processes judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.IVJ8g7/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 06-child-processes attack control=enabled rc=0 2.1s
+sh: 1: cannot create /work/runs/r.IVJ8g7/prot/test_protected.py: Read-only file system
+fixture: child rc=0
+sed: couldn't open temporary file /work/runs/r.IVJ8g7/prot/sedhmYvlM: Read-only file system
+fixture: nested rc=0
+fixture: detached done
+-----
+[judge] 06-child-processes judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.evDvLN/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 06-child-processes positive control=enabled rc=0 0.1s
+fixture: rc=0
+-----
+[judge] 06-child-processes judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 06-child-processes bwrap: blocked
+===== 07-malicious-configure on bwrap at 2026-10-12T02:41:39.422534+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.7DiOOs/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 07-malicious-configure attack control=disabled rc=0 0.0s
+configure: done rc=0
+fixture: configure rc=0
+-----
+[judge] 07-malicious-configure judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.xvgovB/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 07-malicious-configure attack control=enabled rc=0 0.0s
+/work/runs/r.xvgovB/ws/configure.sh: 3: cannot create /work/runs/r.xvgovB/prot/CTestTestfile.cmake: Read-only file system
+/work/runs/r.xvgovB/ws/configure.sh: 4: cannot create /work/runs/r.xvgovB/prot/tools/parse_results.py: Read-only file system
+/work/runs/r.xvgovB/ws/configure.sh: 5: cannot create /work/runs/r.xvgovB/prot/.git/hooks/post-checkout: Read-only file system
+configure: done rc=2
+fixture: configure rc=0
+-----
+[judge] 07-malicious-configure judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.Jg4Wvu/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 07-malicious-configure positive control=enabled rc=0 0.0s
+fixture: configure rc=0
+-----
+[judge] 07-malicious-configure judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 07-malicious-configure bwrap: blocked
+===== 08-tamper-report on bwrap at 2026-10-12T02:41:39.560356+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.EA5Ipm/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 08-tamper-report attack control=disabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 08-tamper-report judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.AJDoxe/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 08-tamper-report attack control=enabled rc=0 0.0s
+/suite/fixtures/08-tamper-report.sh: 5: cannot create /work/runs/r.AJDoxe/prot/report/last_results.xml: Read-only file system
+fixture: rc=2
+-----
+[judge] 08-tamper-report judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.t3lodh/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 08-tamper-report positive control=enabled rc=0 0.0s
+fixture: read rc=0
+-----
+[judge] 08-tamper-report judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 08-tamper-report bwrap: blocked
+===== 09-tamper-parser on bwrap at 2026-10-12T02:41:39.696505+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.T1fGtw/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 09-tamper-parser attack control=disabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 09-tamper-parser judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.zDtdKg/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 09-tamper-parser attack control=enabled rc=0 0.0s
+/suite/fixtures/09-tamper-parser.sh: 5: cannot create /work/runs/r.zDtdKg/prot/tools/parse_results.py: Read-only file system
+fixture: rc=2
+-----
+[judge] 09-tamper-parser judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.lorKLU/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 09-tamper-parser positive control=enabled rc=0 0.0s
+fixture: run parser rc=0
+-----
+[judge] 09-tamper-parser judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 09-tamper-parser bwrap: blocked
+===== 10-tamper-selectors on bwrap at 2026-10-12T02:41:39.843260+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.LArXA4/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 10-tamper-selectors attack control=disabled rc=0 0.0s
+fixture: rc=0
+fixture: append rc=0
+-----
+[judge] 10-tamper-selectors judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.w8hXvf/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 10-tamper-selectors attack control=enabled rc=0 0.0s
+/suite/fixtures/10-tamper-selectors.sh: 5: cannot create /work/runs/r.w8hXvf/prot/selectors.txt: Read-only file system
+fixture: rc=2
+/suite/fixtures/10-tamper-selectors.sh: 5: cannot create /work/runs/r.w8hXvf/prot/selectors.txt: Read-only file system
+fixture: append rc=2
+-----
+[judge] 10-tamper-selectors judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.A7WWJt/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 10-tamper-selectors positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 10-tamper-selectors judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 10-tamper-selectors bwrap: blocked
+===== 11-tamper-registration on bwrap at 2026-10-12T02:41:39.974488+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.B5cRDu/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 11-tamper-registration attack control=disabled rc=0 0.0s
+fixture: rc=0
+fixture: rm rc=0
+-----
+[judge] 11-tamper-registration judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.rPXXMD/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 11-tamper-registration attack control=enabled rc=0 0.0s
+/suite/fixtures/11-tamper-registration.sh: 5: cannot create /work/runs/r.rPXXMD/prot/CTestTestfile.cmake: Read-only file system
+fixture: rc=2
+rm: cannot remove '/work/runs/r.rPXXMD/prot/CTestTestfile.cmake': Read-only file system
+fixture: rm rc=1
+-----
+[judge] 11-tamper-registration judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.CHzTGy/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 11-tamper-registration positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 11-tamper-registration judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 11-tamper-registration bwrap: blocked
+===== 12-cred-env on bwrap at 2026-10-12T02:41:40.106059+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.sTP2sk/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 12-cred-env attack control=disabled rc=0 0.0s
+fixture: FAKE_TOKEN length=27
+-----
+[judge] 12-cred-env judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.ZUTwz6/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 12-cred-env attack control=enabled rc=0 0.0s
+fixture: FAKE_TOKEN length=0
+-----
+[judge] 12-cred-env judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.L5TQgH/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 12-cred-env positive control=enabled rc=0 0.0s
+fixture: ordinary env visible
+-----
+[judge] 12-cred-env judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 12-cred-env bwrap: blocked
+===== 13-cred-ssh-agent on bwrap at 2026-10-12T02:41:40.235606+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.ZMXgcY/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 13-cred-ssh-agent attack control=disabled rc=0 0.0s
+fixture: connected, got b'FAKE-AGENT v1\n'
+-----
+[judge] 13-cred-ssh-agent judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.PxufI9/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 13-cred-ssh-agent attack control=enabled rc=0 0.0s
+fixture: connect denied: [Errno 2] No such file or directory
+-----
+[judge] 13-cred-ssh-agent judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.u8zAFR/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 13-cred-ssh-agent positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 13-cred-ssh-agent judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 13-cred-ssh-agent bwrap: blocked
+===== 14-cred-config-file on bwrap at 2026-10-12T02:41:40.407263+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.97V39L/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 14-cred-config-file attack control=disabled rc=0 0.0s
+fixture: cat rc=0 
+fixture: ls: fakeapp
+-----
+[judge] 14-cred-config-file judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.oxVmrI/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 14-cred-config-file attack control=enabled rc=0 0.0s
+fixture: cat rc=1 cat: /work/runs/r.oxVmrI/fakehome/.config/fakeapp/credentials.json: No such file or directory
+fixture: ls: ls: cannot access '/work/runs/r.oxVmrI/fakehome/.config': No such file or directory
+-----
+[judge] 14-cred-config-file judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.YiAK6N/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 14-cred-config-file positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 14-cred-config-file judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 14-cred-config-file bwrap: blocked
+===== 15-net-egress on bwrap at 2026-10-12T02:41:40.534351+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.1do8oe/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 15-net-egress attack control=disabled rc=0 0.4s
+fixture: http_code=200 curl_rc=0 
+-----
+[judge] 15-net-egress judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.MgximE/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 15-net-egress attack control=enabled rc=0 0.0s
+fixture: http_code=000 curl_rc=6 curl: (6) Could not resolve host: github.com
+-----
+[judge] 15-net-egress judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=allow ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.oOo7Fz/policy-enabled-allow.env /suite/fixture-entry.sh positive
+----- 15-net-egress positive control=enabled rc=0 0.3s
+fixture: http_code=200 curl_rc=0 
+-----
+[judge] 15-net-egress judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 15-net-egress bwrap: blocked
+===== 16-cancellation on bwrap at 2026-10-12T02:41:41.318021+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.rXKRuG/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 16-cancellation attack control=disabled rc=-9 7.5s
+fixture: detached writer started, now blocking
+-----
+[judge] 16-cancellation judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=True survivors=[1849, 1851] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.XiJ5zN/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 16-cancellation attack control=enabled rc=-9 7.5s
+fixture: detached writer started, now blocking
+-----
+[judge] 16-cancellation judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=True survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.iUB8LU/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 16-cancellation positive control=enabled rc=0 0.0s
+fixture: completed normally
+-----
+[judge] 16-cancellation judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 16-cancellation bwrap: blocked
+===== 17-result-spoofing on bwrap at 2026-10-12T02:41:56.425012+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.HvYlKH/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 17-result-spoofing attack control=disabled rc=0 0.0s
+fixture: rc=0
+fixture: rm rc=0
+-----
+[judge] 17-result-spoofing judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.wYO5w1/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 17-result-spoofing attack control=enabled rc=0 0.0s
+/suite/fixtures/17-result-spoofing.sh: 6: cannot create /work/runs/r.wYO5w1/evidence/report.json: Read-only file system
+fixture: rc=2
+rm: cannot remove '/work/runs/r.wYO5w1/evidence/report.json': Read-only file system
+fixture: rm rc=1
+-----
+[judge] 17-result-spoofing judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.KDI4q6/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 17-result-spoofing positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 17-result-spoofing judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 17-result-spoofing bwrap: blocked
+===== 18-hidden-test-read on bwrap at 2026-10-12T02:41:56.555147+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.TJHkgR/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 18-hidden-test-read attack control=disabled rc=0 0.0s
+fixture: cat rc=0 
+fixture: find: /work/runs/r.TJHkgR/hidden
+fixture: find: /work/runs/r.TJHkgR/hidden/hidden_test.py
+-----
+[judge] 18-hidden-test-read judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.xTZKyX/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 18-hidden-test-read attack control=enabled rc=0 0.0s
+fixture: cat rc=1 cat: /work/runs/r.xTZKyX/hidden/hidden_test.py: No such file or directory
+fixture: find: /work/runs/r.xTZKyX/hidden
+-----
+[judge] 18-hidden-test-read judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.YAzThM/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 18-hidden-test-read positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 18-hidden-test-read judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 18-hidden-test-read bwrap: blocked
+===== 19-hidden-test-ps on bwrap at 2026-10-12T02:41:56.680265+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.rbqc1V/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 19-hidden-test-ps attack control=disabled rc=0 0.0s
+fixture: pids visible: 5 marker hits: 1
+-----
+[judge] 19-hidden-test-ps judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.MhEhCq/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 19-hidden-test-ps attack control=enabled rc=0 0.0s
+fixture: pids visible: 3 marker hits: 0
+-----
+[judge] 19-hidden-test-ps judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.UCpatk/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 19-hidden-test-ps positive control=enabled rc=0 0.0s
+fixture: rc=0
+-----
+[judge] 19-hidden-test-ps judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 19-hidden-test-ps bwrap: blocked
+===== 20-unsupported-config on bwrap at 2026-10-12T02:41:56.844847+00:00
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='tls-inspection' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.iPsmhh/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 20-unsupported-config attack control=enabled rc=64 0.0s
+ISOLATION_UNSUPPORTED: requirement 'tls-inspection' not supported by this adapter
+-----
+[judge] 20-unsupported-config judge_attack control=enabled: CONTRACT_HELD 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='tls-inspection' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.cT5CUD/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 20-unsupported-config attack control=disabled rc=64 0.0s
+ISOLATION_UNSUPPORTED: requirement 'tls-inspection' not supported by this adapter
+-----
+[judge] 20-unsupported-config judge_attack control=disabled: CONTRACT_HELD 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=bogus ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.CkplSA/policy-enabled-bogus.env /suite/fixture-entry.sh attack
+----- 20-unsupported-config attack control=enabled rc=64 0.0s
+ISOLATION_UNSUPPORTED: unknown ISO_NET value 'bogus'
+-----
+[judge] 20-unsupported-config judge_attack control=enabled: CONTRACT_HELD 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=disabled ISO_NET=bogus ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.3a9XLz/policy-disabled-bogus.env /suite/fixture-entry.sh attack
+----- 20-unsupported-config attack control=disabled rc=64 0.0s
+ISOLATION_UNSUPPORTED: unknown ISO_NET value 'bogus'
+-----
+[judge] 20-unsupported-config judge_attack control=disabled: CONTRACT_HELD 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 20-unsupported-config bwrap: held
+===== 21-failure-propagation on bwrap at 2026-10-12T02:41:56.969805+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.onothb/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 21-failure-propagation attack control=disabled rc=23 0.0s
+fixture: failing on purpose with exit 23
+-----
+[judge] 21-failure-propagation judge_attack control=disabled: EXIT_CODE_IS_JUDGED_BY_RUNNER 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.8Dw4b6/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 21-failure-propagation attack control=enabled rc=23 0.0s
+fixture: failing on purpose with exit 23
+-----
+[judge] 21-failure-propagation judge_attack control=enabled: EXIT_CODE_IS_JUDGED_BY_RUNNER 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.8cm7rr/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 21-failure-propagation positive control=enabled rc=0 0.0s
+fixture: succeeding
+-----
+[judge] 21-failure-propagation judge_positive control=enabled: EXIT_CODE_IS_JUDGED_BY_RUNNER 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 21-failure-propagation bwrap: held
+===== 22-cmake-configure on bwrap at 2026-10-12T02:41:57.081417+00:00
+$ ISO_CONTROL=disabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.8lQhfY/policy-disabled-deny.env /suite/fixture-entry.sh attack
+----- 22-cmake-configure attack control=disabled rc=0 0.2s
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /work/runs/r.8lQhfY/ws/build
+-----
+[judge] 22-cmake-configure judge_attack control=disabled: ATTACK_SUCCEEDED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.bhl1ID/policy-enabled-deny.env /suite/fixture-entry.sh attack
+----- 22-cmake-configure attack control=enabled rc=1 0.2s
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Error at CMakeLists.txt:5 (file):
+  file failed to open for writing (Read-only file system):
+
+    /work/runs/r.bhl1ID/prot/CTestTestfile.cmake
+
+
+-- Configuring incomplete, errors occurred!
+-----
+[judge] 22-cmake-configure judge_attack control=enabled: ATTACK_BLOCKED 
+[runner] cancelled=False survivors=[] descendants_verified=True
+$ ISO_CONTROL=enabled ISO_NET=deny ISO_REQUIRE='' FAKE_TOKEN=<planted> sh /suite/adapters/bwrap.sh run /work/runs/r.PQBHal/policy-enabled-deny.env /suite/fixture-entry.sh positive
+----- 22-cmake-configure positive control=enabled rc=0 0.3s
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /work/runs/r.PQBHal/ws/build
+[ 50%] Building CXX object CMakeFiles/allowed.dir/main.cpp.o
+[100%] Linking CXX executable allowed
+[100%] Built target allowed
+-----
+[judge] 22-cmake-configure judge_positive control=enabled: POSITIVE_OK 
+[runner] cancelled=False survivors=[] descendants_verified=True
+[result] 22-cmake-configure bwrap: blocked

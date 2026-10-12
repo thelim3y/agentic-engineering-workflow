@@ -1,6 +1,25 @@
 # Isolation capability matrix (spike, P2 and P3)
 
-Status: evidence from one run on one host environment. Not a decision.
+Status: shell/build evidence exists; complete host conformance remains unproven.
+Review found false-pass paths in the original runner: missing/failed judges,
+unverified cancellation, and successful CLI exits for failed or empty suites.
+The runner has been corrected and regression-tested; the full three-host suite
+has not been revalidated. **Checkpoint A remains unproven.**
+
+## Fresh Linux run
+
+On Ubuntu 24.04.5 / kernel 7.0.0-31, bubblewrap 0.9.0 and Codex CLI 0.156.1 each
+passed all 22 corrected fixtures, including a new real CMake configure attack and
+successful C++ build/run. All 36 regression tests passed. These runs used the
+credential-free outer wrapper, outside the surrounding Codex session sandbox.
+
+See [dated evidence, commands and limits](../../tests/isolation/results/linux-2026-10-12/README.md).
+This proves the tested shell/build mechanisms, not complete agent sessions,
+native editing/MCP tools, model identity or the production workflow.
+
+## Original VM observations
+
+The remaining tables describe the original, provisional run, not the fresh run.
 Suite: `tests/isolation/` (README has the exact commands). Logs:
 `tests/isolation/results/bwrap.log`, `tests/isolation/results/claude-code-srt.log`,
 `tests/isolation/results/codex.log`, `tests/isolation/results/claude-code-live.log`,
@@ -33,6 +52,10 @@ unsupported = the host cannot express the requirement. untested = not establishe
 
 ## Fixture by host
 
+The table below preserves the original run's classifications. Every `enforced`
+or `held` entry is provisional pending a fresh run with the corrected runner;
+it is not a current capability guarantee. Historical raw logs are unchanged.
+
 | Fixture (tests/isolation/fixtures) | bwrap | claude-code-srt | codex (`codex sandbox`) | Claude Code session |
 |---|---|---|---|---|
 | 01 direct edit of protected test | enforced (log: 01-direct-edit) | enforced | enforced | untested; Edit/Write tools run outside the sandbox per docs, so discouraged unless the whole process is wrapped |
@@ -58,14 +81,15 @@ unsupported = the host cannot express the requirement. untested = not establishe
 | 21 failure propagation (exit 23 inside the sandbox) | held | held | held | untested |
 | role invocation with structured output and effective model identity | not applicable | not applicable | untested (no credentials); `codex exec --json` emits JSONL events; unknown `-m` is reported as an error item and the run continues with fallback metadata | untested (claude not enabled, no credentials) |
 
-Every "enforced" cell has three logged runs: control disabled with
+Every historically reported "enforced" cell has three logged runs: control disabled with
 `ATTACK_SUCCEEDED`, control enabled with `ATTACK_BLOCKED`, positive control with
 `POSITIVE_OK`. See `[judge]` and `[result]` lines in the logs.
 
 ## Attacks that succeeded with the control enabled
 
-None, on these three mechanisms, in this environment. Every attack succeeded
-with the control disabled, so the fixtures are live.
+The original runner reported none. Its verdict defects mean this is not proof
+that every enabled attack was prevented. Inspect the raw observations and rerun
+the corrected suite before accepting any capability.
 
 ## Host differences recorded (P3)
 
@@ -124,26 +148,23 @@ with the control disabled, so the fixtures are live.
 
 ## Recommendation
 
-Feasible for the mechanism, unproven for the product. The OS boundary the design
-needs (ro root, rw workspace, hidden verifier inputs, no credential paths,
-no egress or allowlisted egress, whole-tree termination, private pid namespace)
-is deliverable on this kernel with either bubblewrap directly or srt, and srt
-adds the hostname allowlist and the unix-socket filter. Prefer wrapping the
-entire host process (Claude Code or Codex) in that boundary rather than relying
-on the host's in-process Bash sandbox, because the host's own file tools, hooks
-and MCP servers are outside it. Keep the runner-owned evidence directory and the
-hidden-test directory outside the writable set, as the fixtures do.
+Promising mechanism evidence, not yet verified product isolation. Revalidate the
+shared contract with the corrected runner before selecting an adapter. An outer
+boundary around the whole host process remains worth evaluating; shell-only
+probes do not establish protection for every host tool.
 
-Both hosts run the same suite through a thin adapter (`adapters/*.sh`, 40 to
-60 lines each) and every fixture is enforced on both, so the shared contract
-holds at the sandbox layer. What is not shown: either host running an actual
-agent turn inside that boundary, structured output, effective model identity,
-and the hosts' own non-shell tools (Claude Code Read/Edit/Write, Codex
-`apply_patch`, MCP) which both products document as outside the shell sandbox.
+Claude Code documents its Read/Edit/Write tools, hooks and MCP servers outside
+its shell sandbox. Do not generalize that to Codex `apply_patch`: the pinned
+[Codex 0.162.1 source](https://github.com/openai/codex/blob/rust-v0.162.1/codex-rs/core/src/tools/runtimes/apply_patch.rs#L156)
+passes a filesystem sandbox context into patch application. That source reading
+does not prove this product's policy, but contradicts the blanket claim that
+patches bypass filesystem sandboxing. Non-shell tools remain **untested here**.
 
-Before Checkpoint A: rerun `python3 runner.py --host bwrap`, `--host
-claude-code-srt` and `--host codex` on the real workstation (and on the chosen
-target OS); run a real Claude Code session with `sandbox.enabled`,
+Before Checkpoint A: rerun all three adapters using the credential-free outer
+launcher described in the [suite README](../../tests/isolation/README.md), on
+each target OS. Never run disabled controls directly on a credentialed workstation.
+Separately, with human approval and a scoped credential boundary, run a real
+Claude Code session with `sandbox.enabled`,
 `allowUnsandboxedCommands: false`, `sandbox.failIfUnavailable: true` and a
 `credentials` block; run `codex exec --json` with credentials and a pinned model
 to capture structured output and the reported model identity on both hosts.
