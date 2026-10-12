@@ -53,3 +53,11 @@ plugin marketplace, or microservices without evidence.
 User-facing output must be as concise as possible without hiding facts, evidence,
 limitations, or required action. A green run means configured checks passed; it
 does not prove the application has no defects.
+
+## Review records
+
+Historical reviews record findings and recommendations, not changes to the design
+contracts. GitHub Issues remains the backlog.
+
+- 12 October 2026: [adversarial review](reviews/2026-10-12-adversarial-review.md)
+  and [detailed findings](reviews/2026-10-12-adversarial-findings.md).
