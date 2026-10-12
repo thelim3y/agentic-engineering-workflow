@@ -19,8 +19,10 @@ Human decisions bind exact proposals. Memory and retrieval provide context, not 
 
 Initial immutability enforcement must resist agents and their execution tools.
 Administrator resistance is not claimed; privileged access and retention must be
-declared before release. Storage engines, isolation technology, runtime language
-and OS support remain open and require separate decisions and proof.
+declared before release. Storage engines and isolation technology remain open and
+require separate decisions and proof. [ADR-0003](0003-initial-runtime-boundary.md)
+selects the initial runtime and operating-system support boundary without changing
+this trust decision.
 
 ## Alternatives
 

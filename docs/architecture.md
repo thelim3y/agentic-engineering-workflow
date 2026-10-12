@@ -1,7 +1,9 @@
 # Architecture overview
 
 Status: required design, not implemented. Storage and enforcement technology remain
-undecided. This diagram shows logical components, not separate services or agent order.
+undecided. [ADR-0003](decisions/0003-initial-runtime-boundary.md) fixes the initial
+single-host Python/Linux deployment boundary. This diagram shows logical components,
+not separate services or agent order.
 
 ## Components and interfaces
 
@@ -72,7 +74,8 @@ Arrows show primary interactions, not every audit event or data transfer.
 - [Interfaces](interfaces.md) define our product's data and behaviour. Adapters
   translate providers into those contracts; named providers are not an exhaustive list.
 - The core has no named-runner branches or provider SDK types. Runner, provider,
-  and model choices resolve through capabilities and versioned adapter contracts.
+  and model choices resolve per role through capabilities and versioned adapter
+  contracts. One run may use several conforming runner adapters.
 - The workflow controls progression; agent outputs are claims to validate, not authority.
 - [Execution isolation](execution.md) applies to agent sessions and their generated
   code, including subprocesses and build scripts. The boundary drawn is required,
@@ -88,6 +91,8 @@ Arrows show primary interactions, not every audit event or data transfer.
   Required instructions and task requirements are supplied directly, not selected by ranking.
 - Local models need a capable agent runner, not just an inference endpoint.
 - All context, evidence, and audit access must preserve role and test-visibility limits.
+- The first supported topology is one operator and one controller deployment on one
+  commissioned Linux host. Multi-host and multi-user authority are unsupported.
 - Human approval of reusable lessons is initial behaviour; only automated convention
   discovery is future. Approved guidance never replaces required policy or gate evidence.
 

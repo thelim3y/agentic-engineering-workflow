@@ -3,9 +3,11 @@
 Status: onboarding blueprint, not installation instructions. No factory package or
 configuration parser exists.
 
-Initial application target: C++. Current feasibility work uses two independent
-runner adapters to challenge the shared contract; neither defines the product.
-The [contract index](README.md) owns policy.
+Initial application target: C++. The first controller implementation and commissioning
+host are CPython 3.12 on Ubuntu 24.04 LTS x86-64; see
+[ADR-0003](decisions/0003-initial-runtime-boundary.md). Current feasibility work uses
+two independent runner adapters to challenge the shared contract; neither defines
+the product. The [contract index](README.md) owns policy.
 
 ## Reuse existing infrastructure
 

@@ -1,7 +1,9 @@
 # Execution boundary
 
-Status: required contract; enforcement technology and supported OS matrix undecided.
-No adapter is supported until its actual execution boundary passes conformance tests.
+Status: required contract; enforcement technology is undecided. The initial platform
+is CPython 3.12 on Ubuntu 24.04 LTS x86-64 under the support boundary in
+[ADR-0003](decisions/0003-initial-runtime-boundary.md). No adapter or execution
+provider is supported until its actual boundary passes conformance tests.
 
 ## Trusted control, untrusted work
 
@@ -52,10 +54,11 @@ human approval bound to the exact proposal. Requirement gaps return to the plann
   is attributable output, not proof that every assertion is honest or sufficient.
 - Do not reuse builds or caches without matching identities and isolation controls.
 
-Test visibility is configurable separately from write permission. Hidden-source
-mode must cover tool output, process access, caches, memory and artifacts. Code
-executing in a test process may observe runtime inputs; do not promise complete
-behavioural secrecy. Reject a requested isolation guarantee the runner cannot prove.
+Implementation cannot read or write test-related inputs. Controller-approved
+diagnostic feedback is a separate bounded output, not test visibility. The boundary
+must cover tool output, process access, caches, memory and artifacts. Code executing
+in a test process may observe runtime inputs; do not promise complete behavioural
+secrecy. Reject an isolation guarantee the execution provider cannot prove.
 
 ## External actions and secrets
 
@@ -79,4 +82,6 @@ and late outputs. Include allowed operations so a sandbox that blocks all work
 cannot pass. Loss of isolation stops the run; it never enables wider permissions.
 
 See [verification](verification.md), [adapter contracts](interfaces.md) and the
-[decision rationale](decisions/0001-trusted-workflow-boundaries.md).
+[trust decision](decisions/0001-trusted-workflow-boundaries.md). The initial runtime,
+topology and adversary boundary are fixed in
+[ADR-0003](decisions/0003-initial-runtime-boundary.md).
