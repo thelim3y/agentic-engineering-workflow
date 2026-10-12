@@ -14,6 +14,7 @@ shared agent entry point. Planned work lives in
 
 | Document | Owns |
 |---|---|
+| [First goal](first-goal.md) | Initial product outcome, operating shape, and limits. |
 | [Architecture](architecture.md) | Components, trust boundaries, and scope. |
 | [Workflow](workflow.md) | Stage order, handoffs, issue state, and completion. |
 | [Planner](planner.md) | Clarity, planning, size, risk, and escalation. |
