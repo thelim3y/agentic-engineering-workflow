@@ -48,8 +48,9 @@ fixtures on a disposable, credential-free machine.
 `/opt/runtime`. Never point it at a home, workspace, or credential store.
 
 Results use a new `isolation-results-*` directory under `/tmp`, or the parent
-given to `--results-dir`. Existing output is not overwritten. `--keep` copies
-fixture files before teardown. Results are not immutable audit storage.
+given to `--results-dir`. Existing output is not overwritten. Disposable fixture
+directories can contain synthetic protected material and are always deleted; they
+cannot be copied into results. Results are not immutable audit storage.
 
 ## Commands
 
@@ -92,7 +93,10 @@ nothing.
 
 The fixture environment names writable workspace, protected verification inputs,
 hidden tests, evidence, fake credentials, a fake socket, a decoy process, and
-network policy. These values are synthetic.
+network policy. Protected comparison values are random per phase. They exist only in
+their intended protected source and trusted runner memory, then enter the judge
+environment after measured execution ends. They are absent from policy files,
+mounted harness source, logs, summaries, and retained artifacts.
 
 The network fixture checks only authenticated HTTPS reachability to `github.com`.
 Any received HTTP response proves that path was reachable. A denied-policy transport

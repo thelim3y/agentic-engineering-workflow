@@ -199,7 +199,7 @@ class CliExitTests(unittest.TestCase):
                 return row
 
             subject.run_fixture.side_effect = record
-            arguments = SimpleNamespace(host="fake", keep=False, fixture=list(filters), results_dir=root / "results")
+            arguments = SimpleNamespace(host="fake", fixture=list(filters), results_dir=root / "results")
             with mock.patch.object(runner, "HERE", root), mock.patch.object(runner, "FIXTURES", fixtures), \
                     mock.patch.object(runner, "Runner", return_value=subject), \
                     contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
