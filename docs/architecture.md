@@ -80,6 +80,12 @@ Arrows show primary interactions, not every audit event or data transfer.
 - Credentialed external operations pass through authorized interfaces, not unrestricted
   agent credentials. Issue tracking and repository/PR delivery are separate contracts.
 - Controlled capture supplies [revision-bound evidence](communication-protocol.md).
+- Every workflow action is audit-covered: controller decisions and state transitions,
+  agent dispatch and results, adapter operations, tool requests and executions, gates,
+  approvals, retries, cancellations, recovery and external operations. Record intent
+  before execution and append the observed outcome, including rejection, denial,
+  failure, timeout and unknown outcome. If a required append fails, further work stops;
+  the workflow never continues with an unlogged action. See [audit](audit.md).
 - Run state and the immutable audit log have different update rules. Separate boxes
   do not require separate database servers; deployment is undecided. Checkpoints must
   reference durable audit coverage and protected artifacts; see [recovery](checkpoints.md).

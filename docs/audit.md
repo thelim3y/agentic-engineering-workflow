@@ -21,6 +21,18 @@ controller-owned observations and decisions.
 
 ## What is recorded
 
+Every action visible to the workflow is recorded, regardless of outcome. This covers
+controller decisions and state transitions, agent dispatch and results, adapter
+operations, tool requests and executions, gates, approvals, retries, cancellations,
+recovery and external operations. Rejected, denied, unsupported, failed, timed-out
+and unknown-outcome attempts remain part of the history; absence of success is not
+absence of an audit event.
+
+Append the authorized intent before an action starts and append its observed outcome
+afterward. An action whose intent cannot be durably appended must not start. Failure
+to append a required outcome blocks further work and enters recovery; it must not be
+treated as permission to continue without audit coverage.
+
 - Run/task/role/invocation identities and effective configuration.
 - Original task, accepted plan, input snapshots and the context actually supplied.
 - Agent outputs, tool requests, execution records, artifacts and gate decisions.
