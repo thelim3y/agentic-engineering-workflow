@@ -1,4 +1,4 @@
-"""Small language-neutral v1 audit envelope, receipts and typed failures."""
+"""Small language-neutral v1 audit events, receipts and typed failures."""
 
 import json
 import math
