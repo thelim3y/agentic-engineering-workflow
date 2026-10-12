@@ -63,6 +63,20 @@ class ProcessSupervisionTests(unittest.TestCase):
         self.assertEqual(result["survivors"], [])
         self.assertEqual(result["remaining"], [])
 
+    def test_output_is_bounded_and_truncation_is_explicit(self):
+        result = self.scenario("""
+            size = processes.MAX_OUTPUT_BYTES + 4096
+            result = processes.run_command(
+                [sys.executable, '-c', f'import os; os.write(1, b"x" * {size})'],
+                env={'PATH': os.defpath}, cwd=root, timeout=2)
+            result['remaining'] = list(processes.descendants())
+            print(json.dumps(result))
+        """)
+        self.assertEqual(len(result["output"].encode()), 1024 * 1024)
+        self.assertTrue(result["output_truncated"])
+        self.assertTrue(result["drain_complete"])
+        self.assertEqual(result["remaining"], [])
+
     def test_command_finishing_before_cancel_deadline_is_not_cancelled(self):
         result = self.scenario("""
             result = processes.run_command(

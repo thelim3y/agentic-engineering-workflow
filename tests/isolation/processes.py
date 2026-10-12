@@ -8,8 +8,49 @@ import os
 from pathlib import Path
 import signal
 import subprocess
-import tempfile
+import threading
 import time
+
+
+MAX_OUTPUT_BYTES = 1024 * 1024
+
+
+class _OutputCollector:
+    def __init__(self, descriptor, limit=MAX_OUTPUT_BYTES):
+        self.descriptor = descriptor
+        self.limit = limit
+        self.content = bytearray()
+        self.total = 0
+        self.error = None
+        self.thread = threading.Thread(target=self._collect, daemon=True)
+
+    def _collect(self):
+        try:
+            while True:
+                block = os.read(self.descriptor, 64 * 1024)
+                if not block:
+                    return
+                self.total += len(block)
+                remaining = self.limit - len(self.content)
+                if remaining > 0:
+                    self.content.extend(block[:remaining])
+        except OSError as error:
+            self.error = error
+        finally:
+            os.close(self.descriptor)
+
+    def start(self):
+        self.thread.start()
+
+    def finish(self, timeout=2):
+        self.thread.join(timeout)
+        return {
+            "output": bytes(self.content).decode("utf-8", errors="replace"),
+            "output_bytes_retained": len(self.content),
+            "output_bytes_total": self.total,
+            "output_truncated": self.total > self.limit,
+            "drain_complete": not self.thread.is_alive() and self.error is None,
+        }
 
 
 def enable_subreaper():
@@ -90,36 +131,42 @@ def run_command(cmd, env, cwd, timeout=120, cancel_after=None, late_wait=6, excl
     _require_subreaper()
     cancelled = timed_out = False
     observed = set()
-    # A regular file avoids communicate() waiting on a detached inherited pipe.
-    with tempfile.TemporaryFile() as output:
-        process = subprocess.Popen(cmd, env=env, cwd=cwd, stdout=output,
-                                   stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
+    read_fd, write_fd = os.pipe()
+    try:
+        process = subprocess.Popen(cmd, env=env, cwd=cwd, stdout=write_fd,
+                                   stderr=write_fd, stdin=subprocess.DEVNULL,
                                    start_new_session=True)
+    except Exception:
+        os.close(read_fd)
+        os.close(write_fd)
+        raise
+    os.close(write_fd)
+    collector = _OutputCollector(read_fd)
+    collector.start()
+    try:
         try:
+            process.wait(timeout=cancel_after if cancel_after is not None else timeout)
+        except subprocess.TimeoutExpired:
             try:
-                process.wait(timeout=cancel_after if cancel_after is not None else timeout)
-            except subprocess.TimeoutExpired:
-                try:
-                    os.killpg(process.pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
-                else:
-                    cancelled = cancel_after is not None
-                timed_out = cancel_after is None
-                process.wait(timeout=2)
-            # Include early survivors even if they exit before the late-effect check.
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            else:
+                cancelled = cancel_after is not None
+            timed_out = cancel_after is None
+            process.wait(timeout=2)
+        # Include early survivors even if they exit before the late-effect check.
+        observed.update(pid for pid, data in descendants(exclude).items() if data["state"] != "Z")
+        if cancelled:
+            time.sleep(late_wait)
             observed.update(pid for pid, data in descendants(exclude).items() if data["state"] != "Z")
-            if cancelled:
-                time.sleep(late_wait)
-                observed.update(pid for pid, data in descendants(exclude).items() if data["state"] != "Z")
-        finally:
+    finally:
+        try:
             if process.poll() is None:
                 process.kill()
                 process.wait(timeout=2)
             terminate_descendants(exclude)
-        output.seek(0)
-        content = output.read(1024 * 1024 + 1)
-        complete = len(content) <= 1024 * 1024
-        return {"rc": process.returncode, "cancelled": cancelled, "timed_out": timed_out,
-                "survivors": sorted(observed), "descendants_verified": True,
-                "drain_complete": complete, "output": content[:1024 * 1024].decode("utf-8", errors="replace")}
+        finally:
+            capture = collector.finish()
+    return {"rc": process.returncode, "cancelled": cancelled, "timed_out": timed_out,
+            "survivors": sorted(observed), "descendants_verified": True, **capture}

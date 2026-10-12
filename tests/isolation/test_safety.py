@@ -46,6 +46,16 @@ class NetworkJudgeTests(unittest.TestCase):
         self.assertEqual(self.judge(0, 127), "INDETERMINATE")
 
 
+class FilesystemJudgeTests(unittest.TestCase):
+    def test_missing_trusted_change_observation_is_indeterminate(self):
+        result = subprocess.run(
+            ["sh", str(runner.FIXTURES / "01-direct-edit.sh"), "judge_attack"],
+            env={"PATH": "/usr/bin:/bin"}, text=True, capture_output=True, timeout=5,
+        )
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(result.stdout.strip(), "INDETERMINATE")
+
+
 class SafetyLauncherTests(unittest.TestCase):
     def test_existing_log_is_never_overwritten(self):
         with tempfile.TemporaryDirectory() as directory:
