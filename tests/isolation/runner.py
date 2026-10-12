@@ -6,21 +6,21 @@ disposable environment:
   (a) control disabled : the attack must SUCCEED, or the fixture is invalid
   (b) control enabled  : the attack must be BLOCKED
   (c) positive control : an allowed operation must succeed in the same sandbox
-Verdict per cell: blocked | allowed | invalid-fixture | too-strict | untested.
-Raw output of every command goes to results/<host>.log; a machine summary to
-results/<host>.json. The runner judges from outside the sandbox; nothing a
-fixture prints is trusted for the verdict.
+Verdict per cell: blocked | allowed | invalid-fixture | too-strict | untested |
+unsupported. Fresh output directories preserve historical logs. The runner
+judges outside the adapter boundary; stdout is not a verdict. All trials,
+including disabled controls, run inside a credential-free outer filesystem.
 
 Usage: python3 runner.py --host <adapter name> [--fixture <name-fragment>]...
 """
-import argparse, json, os, secrets, shutil, signal, socket, subprocess, sys, threading, time
+import argparse, json, os, secrets, shlex, shutil, socket, subprocess, sys, tempfile, threading, time, traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 FIXTURES = HERE / "fixtures"
 ADAPTERS = HERE / "adapters"
-RUN_ROOT = Path(os.environ.get("ISO_RUN_ROOT", str(Path.home() / "iso-runs")))
+RUN_ROOT = Path("/work/runs")
 NET_HOST = os.environ.get("ISO_NET_HOST", "github.com")
 EXIT_UNSUPPORTED = 64
 CANCEL_FIXTURES = {"16-cancellation"}
@@ -33,7 +33,7 @@ GIT_ENV = {"GIT_AUTHOR_NAME": "spike", "GIT_AUTHOR_EMAIL": "spike@example.invali
 
 class Log:
     def __init__(self, path):
-        self.f = open(path, "w")
+        self.f = open(path, "x")
     def __call__(self, *parts):
         line = " ".join(str(p) for p in parts)
         self.f.write(line + "\n"); self.f.flush()
@@ -41,8 +41,15 @@ class Log:
         self("----- " + title); self(text.rstrip("\n") if text else "(no output)"); self("-----")
 
 
+def child_environment(extra=None):
+    """Only deliberate public settings and synthetic fixture values cross over."""
+    return {"PATH": "/opt/runtime/bin:/usr/bin:/bin", "LANG": "C.UTF-8",
+            "PYTHONDONTWRITEBYTECODE": "1", **GIT_ENV, **(extra or {})}
+
+
 def sh(cmd, cwd=None, env=None):
-    return subprocess.run(cmd, cwd=cwd, env=env, text=True, capture_output=True)
+    return subprocess.run(cmd, cwd=cwd, env=child_environment(env), text=True,
+                          capture_output=True, timeout=15)
 
 
 def tree_hash(d):
@@ -58,7 +65,7 @@ class Env:
         (self.t/"TAG").write_text(tag + "\n")  # which host/fixture/run this directory served
         t = self.t
         if len(str(t/"fakeagent"/"agent.sock")) > 100:
-            raise RuntimeError("run root path too long for AF_UNIX; set ISO_RUN_ROOT to a shorter path")
+            raise RuntimeError("internal run path too long for AF_UNIX")
         self.ws, self.prot, self.hidden, self.evidence = t/"ws", t/"prot", t/"hidden", t/"evidence"
         self.fake_home, self.sock_dir, self.plant, self.baseline = t/"fakehome", t/"fakeagent", t/"plant", t/"baseline"
         for d in (self.ws/"config", self.prot/"tools", self.prot/"report", self.hidden, self.evidence,
@@ -78,11 +85,11 @@ class Env:
         (self.prot/"selectors.txt").write_text("test_protected\n")
         (self.prot/"tools"/"parse_results.py").write_text("import re, sys\nx = open(sys.argv[1]).read()\nprint('failures=' + re.search(r'failures=\"(\\d+)\"', x).group(1))\n")
         (self.prot/"report"/"last_results.xml").write_text('<testsuite tests="1" failures="1"/>\n')
-        g = lambda *a: subprocess.run(["git", "-C", str(self.prot), *a], check=True, capture_output=True, env={**os.environ, **GIT_ENV})
+        g = lambda *a: subprocess.run(["git", "-C", str(self.prot), *a], check=True, capture_output=True, env=child_environment(), timeout=15)
         g("init", "-q", "-b", "main"); g("add", "-A"); g("commit", "-q", "-m", "protected inputs")
         g("checkout", "-q", "-b", "weak"); (self.prot/"test_protected.py").write_text("def test_protected():\n    assert True\n")
         g("commit", "-q", "-am", "weakened"); g("checkout", "-q", "main")
-        subprocess.run(["git", "-C", str(self.ws), "init", "-q", "-b", "main"], check=True, capture_output=True)
+        subprocess.run(["git", "-C", str(self.ws), "init", "-q", "-b", "main"], check=True, capture_output=True, env=child_environment(), timeout=15)
         (self.ws/"README.md").write_text("agent workspace\n")
         self.sock = self.sock_dir/"agent.sock"
         self._serve_fake_agent()
@@ -104,7 +111,7 @@ class Env:
               "ISO_FAKE_SOCK": self.sock, "ISO_NET": net, "ISO_NET_HOST": NET_HOST, "ISO_SCRUB_ENV": "FAKE_TOKEN",
               "ISO_MARKER_FILE": self.marker_file, "ISO_CONTROL": control, "ISO_REQUIRE": require}
         p = self.t/f"policy-{control}-{net}.env"
-        p.write_text("".join(f"{k}='{v}'\n" for k, v in kv.items()))
+        p.write_text("".join(f"{k}={shlex.quote(str(v))}\n" for k, v in kv.items()))
         return p, {k: str(v) for k, v in kv.items()}
 
     def snapshot(self):
@@ -118,61 +125,50 @@ class Env:
 
 
 class Runner:
-    def __init__(self, host, keep):
+    def __init__(self, host, keep, results_dir):
         self.host = host; self.adapter = ADAPTERS/f"{host}.sh"; self.keep = keep
         if not self.adapter.exists(): sys.exit(f"no adapter {self.adapter}")
-        (HERE/"results").mkdir(exist_ok=True)
-        self.log = Log(HERE/"results"/f"{host}.log")
+        self.results_dir = Path(results_dir)
+        self.results_dir.mkdir(parents=True, exist_ok=True)
+        self.log = Log(self.results_dir/f"{host}.log")
         self.info = dict(l.split("=", 1) for l in sh(["sh", str(self.adapter), "info"]).stdout.splitlines() if "=" in l)
         self.rows = []
+        self.abort = False
 
     def run_phase(self, env, fixture, phase, control, net="deny", require="", cancel_after=None):
+        from processes import run_command
+
         pol, polenv = env.policy(control, net, require)
         env.snapshot()
         decoy = subprocess.Popen(["python3", "-c", "import time; time.sleep(60)", env.marker],
-                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        cmd = ["sh", str(self.adapter), "run", str(pol), str(fixture), phase]
-        run_env = {**os.environ, **GIT_ENV, **polenv, "FAKE_TOKEN": env.token}
+                                 env=child_environment(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        cmd = ["sh", str(self.adapter), "run", str(pol), str(HERE/"fixture-entry.sh"), phase]
+        run_env = child_environment({**polenv, "FAKE_TOKEN": env.token, "ISO_FIXTURE": str(fixture)})
         self.log(f"$ ISO_CONTROL={control} ISO_NET={net} ISO_REQUIRE='{require}' FAKE_TOKEN=<planted> {' '.join(cmd)}")
-        t0 = time.time()
-        p = subprocess.Popen(cmd, env=run_env, cwd=str(env.ws), text=True, stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT, start_new_session=True)
-        cancelled = False; out = ""
+        t0 = time.monotonic()
         try:
-            if cancel_after:
-                try:
-                    out, _ = p.communicate(timeout=cancel_after)
-                except subprocess.TimeoutExpired:
-                    os.killpg(p.pid, signal.SIGKILL); cancelled = True
-                    out, _ = p.communicate(timeout=10)
-                    time.sleep(0.3); early = self.survivors(env)
-                    self.log(f"[runner] sent SIGKILL to process group {p.pid} after {cancel_after}s; processes still referencing the run dir 0.3s later: {early or 'none'}; waiting 6s for late effects")
-                    time.sleep(6)
-            else:
-                out, _ = p.communicate(timeout=120)
-        except subprocess.TimeoutExpired:
-            os.killpg(p.pid, signal.SIGKILL); out, _ = p.communicate(); out += "\n[runner] TIMEOUT, killed"
-        rc = p.returncode
-        survivors = self.survivors(env) if cancelled else []
-        decoy.kill()
-        self.log.block(f"{fixture.stem} {phase} control={control} rc={rc} {time.time()-t0:.1f}s", out)
+            result = run_command(cmd, env=run_env, cwd=str(env.ws), cancel_after=cancel_after,
+                                 exclude=(decoy.pid,))
+        except Exception:
+            # Never delete or judge an environment with unconfirmed cleanup.
+            env.cleanup_safe = False
+            raise
+        finally:
+            decoy.kill()
+            decoy.wait(timeout=5)
+        out = result.pop("output")
+        rc = result["rc"]
+        self.log.block(f"{fixture.stem} {phase} control={control} rc={rc} {time.monotonic()-t0:.1f}s", out)
         jphase = "judge_attack" if phase == "attack" else "judge_positive"
-        j = sh(["sh", str(fixture), jphase], env={**os.environ, **polenv})
-        verdict = (j.stdout.strip().splitlines() or ["NO_VERDICT"])[-1]
+        j = sh(["sh", str(fixture), jphase], env=polenv)
+        # Exactly one known token is required; extra output is not a verdict.
+        verdict = j.stdout.strip() or "NO_VERDICT"
         self.log(f"[judge] {fixture.stem} {jphase} control={control}: {verdict} {j.stderr.strip()}")
-        if cancelled:
-            self.log(f"[runner] after the wait, processes still referencing the run dir: {survivors or 'none'}; outputs of a cancelled run are never accepted by the runner")
-        return {"rc": rc, "verdict": verdict, "cancelled": cancelled, "survivors": survivors, "unsupported": rc == EXIT_UNSUPPORTED and "ISOLATION_UNSUPPORTED" in out, "output_tail": out[-600:]}
-
-    def survivors(self, env):
-        """PIDs outside the runner whose command line references this run directory."""
-        found = []
-        for pid in os.listdir("/proc"):
-            if not pid.isdigit() or int(pid) == os.getpid(): continue
-            try: c = open(f"/proc/{pid}/cmdline", "rb").read()
-            except OSError: continue
-            if str(env.t).encode() in c: found.append(pid)
-        return found
+        self.log(f"[runner] cancelled={result['cancelled']} survivors={result['survivors']} descendants_verified={result['descendants_verified']}")
+        return {**result, "verdict": verdict, "judge_rc": j.returncode,
+                "started": (env.ws/".fixture-started").is_file(),
+                "unsupported": rc == EXIT_UNSUPPORTED and any(line.startswith("ISOLATION_UNSUPPORTED:") for line in out.splitlines()),
+                "output_tail": out[-600:]}
 
     def run_fixture(self, fixture):
         name = fixture.stem
@@ -185,7 +181,9 @@ class Runner:
                     e = Env(f"{self.host}-{name}-{control}-{phase}")
                     try:
                         r = self.run_phase(e, fixture, phase, control)
-                        res[f"{phase}/{control}"] = {"rc": r["rc"], "expected": want, "ok": r["rc"] == want}
+                        ok = (phase_valid(r, {"EXIT_CODE_IS_JUDGED_BY_RUNNER"})
+                              and r["rc"] == want and not r["survivors"] and not r["cancelled"])
+                        res[f"{phase}/{control}"] = {**r, "expected": want, "ok": ok}
                     finally:
                         e.close(); self.cleanup(e)
                 row.update({"kind": "contract", "verdict": "held" if all(v["ok"] for v in res.values()) else "violated", "detail": res})
@@ -196,10 +194,13 @@ class Runner:
                         e = Env(f"{self.host}-{name}-{label}-{control}")
                         try:
                             r = self.run_phase(e, fixture, "attack", control, **kw)
-                            res[f"{label}/{control}"] = {"typed_error": r["unsupported"], "rc": r["rc"], "fixture_ran": r["verdict"] == "CONTRACT_VIOLATED"}
+                            ok = (phase_valid(r, {"CONTRACT_HELD"}, require_start=False)
+                                  and r["unsupported"] and r["rc"] == EXIT_UNSUPPORTED
+                                  and not r["started"] and not r["survivors"] and not r["cancelled"])
+                            res[f"{label}/{control}"] = {**r, "ok": ok}
                         finally:
                             e.close(); self.cleanup(e)
-                ok = all(v["typed_error"] and not v["fixture_ran"] for v in res.values())
+                ok = all(v["ok"] for v in res.values())
                 row.update({"kind": "contract", "verdict": "held" if ok else "violated", "detail": res})
             else:
                 cancel = 1.5 if name in CANCEL_FIXTURES else None
@@ -210,35 +211,151 @@ class Runner:
                     try: results[label] = self.run_phase(e, fixture, phase, control, net=net, cancel_after=cancel if phase == "attack" else None)
                     finally: e.close(); self.cleanup(e)
                 d, en, pos = results["disabled"]["verdict"], results["enabled"]["verdict"], results["positive"]["verdict"]
-                if any(r["unsupported"] for r in results.values()): verdict = "unsupported"
-                elif d != "ATTACK_SUCCEEDED": verdict = "invalid-fixture"
-                elif en == "ATTACK_SUCCEEDED": verdict = "allowed"
-                elif pos != "POSITIVE_OK": verdict = "too-strict"
-                else: verdict = "blocked"
+                verdict = classify_attack(results, cancellation=bool(cancel))
                 row.update({"kind": "attack", "disabled": d, "enabled": en, "positive": pos, "verdict": verdict,
-                            "survivors_disabled": results["disabled"]["survivors"], "survivors_enabled": results["enabled"]["survivors"]})
+                            "survivors_disabled": results["disabled"]["survivors"], "survivors_enabled": results["enabled"]["survivors"],
+                            "phases": results})
         except Exception as ex:  # a crashed fixture is untested, never passed
             row.update({"verdict": "untested", "error": repr(ex)}); self.log(f"[runner] ERROR {ex!r}")
+            self.log(traceback.format_exc())
         self.log(f"[result] {name} {self.host}: {row['verdict']}")
         self.rows.append(row); return row
 
     def cleanup(self, e):
-        if not self.keep: shutil.rmtree(e.t, ignore_errors=True)
+        if not getattr(e, "cleanup_safe", True):
+            self.abort = True
+            raise RuntimeError("Process cleanup unconfirmed; aborting suite without removing fixture state")
+        if self.keep:
+            shutil.copytree(e.t, self.results_dir/"kept"/e.t.name, symlinks=True,
+                            ignore=lambda directory, names: ["agent.sock"] if Path(directory) == e.sock_dir else [])
+        shutil.rmtree(e.t)
 
 
-def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--host", required=True); ap.add_argument("--fixture", action="append", default=[])
-    ap.add_argument("--keep", action="store_true", help="keep disposable directories")
-    a = ap.parse_args()
+def phase_valid(result, verdicts, require_start=True):
+    return (result.get("judge_rc") == 0 and result.get("verdict") in verdicts
+            and (not require_start or result.get("started") is True)
+            and result.get("timed_out") is False
+            and result.get("drain_complete") is True
+            and result.get("descendants_verified") is True
+            and result.get("rc") not in (126, 127))
+
+
+def classify_attack(results, cancellation=False):
+    if any(r.get("unsupported") for r in results.values()):
+        return "unsupported"
+    for label, result in results.items():
+        expected = {"POSITIVE_OK", "POSITIVE_FAILED"} if label == "positive" else {"ATTACK_SUCCEEDED", "ATTACK_BLOCKED"}
+        if not phase_valid(result, expected):
+            return "untested"
+        if (cancellation and label != "positive") != result["cancelled"]:
+            return "untested"
+        if not result["cancelled"] and result["rc"] < 0:
+            return "untested"
+    disabled, enabled, positive = (results[k] for k in ("disabled", "enabled", "positive"))
+    if disabled["verdict"] != "ATTACK_SUCCEEDED" or (not cancellation and disabled["survivors"]):
+        return "invalid-fixture"
+    if enabled["verdict"] == "ATTACK_SUCCEEDED" or enabled["survivors"]:
+        return "allowed"
+    if positive["verdict"] != "POSITIVE_OK" or positive["rc"] != 0 or positive["survivors"]:
+        return "too-strict"
+    return "blocked"
+
+
+def run_suite(a):
     fixtures = sorted(p for p in FIXTURES.glob("[0-9][0-9]-*.sh") if not a.fixture or any(f in p.stem for f in a.fixture))
-    r = Runner(a.host, a.keep)
+    if not fixtures:
+        print("No fixtures selected; nothing was tested.", file=sys.stderr)
+        return 2
+    r = Runner(a.host, a.keep, a.results_dir)
     r.log(f"##### run start {datetime.now(timezone.utc).isoformat()} host={a.host} info={r.info} run_root={RUN_ROOT} net_host={NET_HOST}")
-    for f in fixtures: r.run_fixture(f)
-    summary = {"host": a.host, "info": r.info, "when": datetime.now(timezone.utc).isoformat(), "rows": r.rows}
-    (HERE/"results"/f"{a.host}.json").write_text(json.dumps(summary, indent=1))
+    for f in fixtures:
+        r.run_fixture(f)
+        if r.abort is True:
+            break
+    summary = {"host": a.host, "info": r.info, "when": datetime.now(timezone.utc).isoformat(),
+               "selected": [f.stem for f in fixtures], "aborted": r.abort is True, "rows": r.rows}
+    with (Path(a.results_dir)/f"{a.host}.json").open("x") as output:
+        json.dump(summary, output, indent=1)
     print(f"| fixture | {a.host}: disabled | enabled | positive | verdict |"); print("|---|---|---|---|---|")
     for row in r.rows:
         print(f"| {row['fixture']} | {row.get('disabled','-')} | {row.get('enabled','-')} | {row.get('positive','-')} | {row['verdict']} |")
+    r.log.f.close()
+    return 0 if len(r.rows) == len(fixtures) and all(row["verdict"] in {"blocked", "held"} for row in r.rows) else 1
+
+def sandbox_command(bwrap, output, args, runtime_root=None):
+    """Outer safety envelope, independent of the adapter being measured.
+
+    Never expose host home, /run, /tmp, root filesystem or inherited secrets.
+    Network remains shared for the fixed HTTPS probe: this is a trusted-fixture
+    harness, NOT an execution boundary for arbitrary agent-generated programs.
+    """
+    cmd = [bwrap, "--unshare-user", "--unshare-pid", "--unshare-ipc", "--unshare-uts",
+           "--die-with-parent", "--new-session", "--clearenv", "--tmpfs", "/",
+           "--proc", "/proc", "--dev", "/dev", "--tmpfs", "/tmp", "--dir", "/work"]
+    for path in ("/usr/bin", "/usr/lib", "/usr/lib64", "/usr/libexec", "/usr/include",
+                 "/usr/share", "/bin", "/lib", "/lib64"):
+        if Path(path).exists():
+            cmd += ["--ro-bind", path, path]
+    for path in ("/etc/ld.so.cache", "/etc/resolv.conf", "/etc/nsswitch.conf",
+                 "/etc/hosts", "/etc/os-release", "/etc/ssl/certs"):
+        if Path(path).exists():
+            cmd += ["--ro-bind", path, path]
+    if runtime_root:
+        cmd += ["--ro-bind", str(runtime_root), "/opt/runtime"]
+    cmd += ["--ro-bind", str(HERE), "/suite", "--bind", str(output), "/results"]
+    for key, value in child_environment().items():
+        cmd += ["--setenv", key, value]
+    # No public bypass flag: the only CLI entry always constructs this envelope.
+    entry = ("import runner; from processes import enable_subreaper; "
+             "enable_subreaper(); "
+             "raise SystemExit(runner.run_suite(runner.parser().parse_args()))")
+    return cmd + ["--chdir", "/suite", "--", "/usr/bin/python3", "-B", "-c", entry,
+                  *args, "--results-dir", "/results"]
+
+
+def parser():
+    ap = argparse.ArgumentParser(description="Isolation spike; always runs inside an outer safety sandbox.")
+    ap.add_argument("--host", required=True, choices=["bwrap", "claude-code-srt", "codex"])
+    ap.add_argument("--fixture", action="append", default=[])
+    ap.add_argument("--keep", action="store_true", help="save disposable directories with results")
+    ap.add_argument("--results-dir", type=Path, help="parent for a NEW run directory; existing logs are never replaced")
+    ap.add_argument("--runtime-root", type=Path, help="reviewed credential-free tool installation with bin/; mounted at /opt/runtime")
+    return ap
+
+
+def main():
+    a = parser().parse_args()
+    bwrap = shutil.which("bwrap", path="/usr/bin:/bin")
+    if not bwrap:
+        print("ISOLATION_UNAVAILABLE: outer bubblewrap is required; no fixtures ran.", file=sys.stderr)
+        return 2
+    if a.runtime_root:
+        runtime = a.runtime_root.resolve(strict=True)
+        if not (runtime / "bin").is_dir() or runtime in (Path("/"), Path.home(), Path("/usr")):
+            print("Use a dedicated credential-free runtime installation, not a home or system root.", file=sys.stderr)
+            return 2
+    else:
+        runtime = None
+    if a.results_dir:
+        a.results_dir.mkdir(parents=True, exist_ok=True)
+    output = Path(tempfile.mkdtemp(prefix="isolation-results-", dir=a.results_dir))
+    args = ["--host", a.host]
+    for fragment in a.fixture:
+        args += ["--fixture", fragment]
+    if a.keep:
+        args.append("--keep")
+    cmd = sandbox_command(bwrap, output, args, runtime)
+    print(f"Results: {output}", flush=True)
+    try:
+        result = subprocess.run(cmd, env=child_environment(), stdin=subprocess.DEVNULL, timeout=3600)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        print(f"ISOLATION_UNAVAILABLE: {error}", file=sys.stderr)
+        return 2
+    if not (output / f"{a.host}.json").is_file():
+        print("ISOLATION_UNAVAILABLE: no suite summary; outer startup or execution failed.", file=sys.stderr)
+        return 2
+    return result.returncode if result.returncode in (0, 1, 2) else 2
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
