@@ -2,6 +2,14 @@
 
 Status: required contract; storage, deployment and retention defaults undecided.
 
+## Purpose
+
+The audit exists primarily to make runs diagnosable, reproducible and traceable. It
+may later supply evidence for ISO-aligned controls, but this design does not claim
+certification. Audit availability is not an execution-safety or authorization
+boundary: an outage reduces debugging and compliance evidence, and an informed user
+may accept that loss for a run.
+
 ## Meaning of immutable
 
 Every run has a durable, append-only audit, including failed, cancelled and paused
@@ -21,27 +29,24 @@ controller-owned observations and decisions.
 
 ## What is recorded
 
-Every action visible to the workflow is recorded, regardless of outcome. This covers
-controller decisions and state transitions, agent dispatch and results, adapter
-operations, tool requests and executions, gates, approvals, retries, cancellations,
-recovery and external operations. Rejected, denied, unsupported, failed, timed-out
-and unknown-outcome attempts remain part of the history; absence of success is not
-absence of an audit event.
+Submit every action visible to the workflow to the audit, regardless of outcome. This
+covers controller decisions and state transitions, agent dispatch and results,
+adapter operations, tool requests and executions, gates, approvals, retries,
+cancellations, recovery and external operations. Rejected, denied, unsupported,
+failed, timed-out and unknown-outcome attempts belong in the history too.
 
-Append the authorized intent before an action starts and append its observed outcome
-afterward. An action whose intent cannot be durably appended must not start. Failure
-to append a required event pauses the run in an audit-unavailable state rather than
-terminating or advancing it. The controller durably preserves the pending event and
-failure details in recovery state, notifies the user through the configured channel,
-preserves that notification attempt as another pending event, and waits for an
-explicit user decision.
+Append authorized intent before an action starts and append its observed outcome
+afterward. If an append fails, pause the run, preserve the event and failure details
+as pending recovery data, notify the user through the configured channel, and wait
+for an explicit decision. The user may retry, abort, or approve continuation while
+the audit remains unavailable.
 
-Approval to continue authorizes audit recovery and retry; it does not waive audit
-coverage. Preserve the authenticated approval as pending until it can be appended.
-After the audit provider recovers, append the missing events, notification outcome
-and approval in their original order before resuming normal work. If recovery or
-backfill still fails, remain paused and notify again when possible. The user may also
-abort the run; preserve and append that decision through the same recovery path.
+Approved continuation marks the run `audit-degraded`; it does not pretend the append
+succeeded. Continue collecting pending events where possible and backfill them in
+order after recovery. Record the notification and user decision when storage becomes
+available. If any event cannot be recovered, retain an explicit gap marker describing
+the affected interval and cause. Reports and exports disclose degraded coverage and
+must not claim a complete trace or use that run as compliance evidence.
 
 - Run/task/role/invocation identities and effective configuration.
 - Original task, accepted plan, input snapshots and the context actually supplied.
@@ -75,10 +80,11 @@ initial file provider does not implement either option; requesting one must fail
 configuration validation. Integrity checks and agent isolation remain required.
 
 Publish referenced artifacts before accepting the event that relies on them. Retain
-the durable event position in every checkpoint. Never publish completed state ahead
-of its audit coverage; use atomic publication or a write-ahead/reconciliation protocol.
-See [crash ordering](checkpoints.md). A failed required append enters the
-audit-unavailable pause and recovery path defined above.
+the durable event position in every checkpoint. Use atomic publication or a
+write-ahead/reconciliation protocol where complete audit coverage is required; see
+[crash ordering](checkpoints.md). A failed append enters the pause and user-decision
+path above. Approved degraded continuation preserves product progress while making
+the reduced diagnostic and compliance evidence explicit.
 
 Redact secrets before persistence. Apply hidden-test and project restrictions to
 artifacts, indexes, logs, backups and exports. If required evidence cannot be safely
@@ -97,7 +103,8 @@ outside that window instead of silently treating it as a new action.
 Backups must preserve identities and access controls. Restore tests must demonstrate
 complete history and usable artifacts. Restoring old state must reconcile ownership
 and remote effects before execution resumes. Missing records or detected tampering
-block progression; they are not repaired by inventing historical events.
+enter the same pause and user-decision path. They are never repaired by inventing
+historical events, and approved continuation retains an explicit gap marker.
 
 Verification includes concurrent appends, denied mutation, evidence replacement,
 disk-full errors, crashes between writes, redaction, expiry and backup restoration.
