@@ -8,7 +8,7 @@ The broader [audit contract](audit.md) remains the direction for later integrati
 ## Use
 
 Run from the repository root; there are no third-party Python dependencies. The
-trusted caller imports `EventV1` from `aew.audit.v1` and `FileAuditV1` from
+trusted caller imports `EventV1` from `aew.audit.events_v1` and `FileAuditV1` from
 `aew.audit.file_v1`. Create storage once with `FileAuditV1.create_v1(path,
 workspace_roots=[...])`; reopen with `FileAuditV1(path, workspace_roots=[...])`.
 Opening missing or damaged storage never creates a replacement.

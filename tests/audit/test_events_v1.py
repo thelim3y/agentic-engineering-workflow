@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from aew.audit.v1 import AuditErrorV1, EventV1
+from aew.audit.events_v1 import AuditErrorV1, EventV1
 
 
 def event(record_id="00000000-0000-4000-8000-000000000001", **changes):
