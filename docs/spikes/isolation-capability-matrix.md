@@ -3,6 +3,9 @@
 Status: shell and build conformance evidence only. The production boundary is not
 approved.
 
+Named tools below identify measured adapters. They are not product dependencies or
+an exhaustive support list.
+
 ## Current evidence
 
 The corrected Linux run is preserved in

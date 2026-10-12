@@ -3,8 +3,9 @@
 Status: onboarding blueprint, not installation instructions. No factory package or
 configuration parser exists.
 
-Initial hosts: Claude Code and Codex. Initial target: C++. The
-[contract index](README.md) owns policy.
+Initial application target: C++. Current feasibility work uses two independent
+runner adapters to challenge the shared contract; neither defines the product.
+The [contract index](README.md) owns policy.
 
 ## Reuse existing infrastructure
 
@@ -18,16 +19,17 @@ Discover exact names and behavior. Do not replace working project configuration.
 
 ## Host checklist
 
-For each supported host:
+For each supported runner adapter:
 
 1. Install and authenticate from official instructions.
-2. Pin and record the tested host version.
+2. Pin and record the tested adapter and host versions.
 3. Resolve runner, provider, model, permissions, and limits per role.
 4. Run the shared isolation and structured-output conformance suite.
 5. Reject unsupported combinations before claiming an issue.
 
-Plugin packaging supplies entry points; it does not make host behavior identical.
-Cross-provider execution is a capability to prove, not assume.
+Host packaging supplies entry points; it does not define the core or make different
+runners behave identically. Cross-provider execution is a capability to prove,
+not assume.
 
 ## GitHub checklist
 
@@ -52,7 +54,7 @@ human-approved lessons only.
 
 1. Pin the client and server versions.
 2. Write a non-secret record and retrieve it from a fresh session.
-3. Verify project and role isolation through both hosts.
+3. Verify project and role isolation through each commissioned adapter.
 4. Test outage, stale-data, retirement, cache, and upgrade behavior.
 5. Keep policy, workflow state, evidence, credentials, and hidden tests elsewhere.
 
