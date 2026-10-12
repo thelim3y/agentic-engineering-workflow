@@ -13,7 +13,7 @@ including disabled controls, run inside a credential-free outer filesystem.
 
 Usage: python3 runner.py --host <adapter name> [--fixture <name-fragment>]...
 """
-import argparse, json, os, secrets, shlex, shutil, socket, subprocess, sys, tempfile, threading, time, traceback
+import argparse, hashlib, json, os, secrets, shlex, shutil, socket, stat, subprocess, sys, tempfile, threading, time, traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -25,6 +25,8 @@ NET_HOST = os.environ.get("ISO_NET_HOST", "github.com")
 EXIT_UNSUPPORTED = 64
 CANCEL_FIXTURES = {"16-cancellation"}
 CONTRACT_FIXTURES = {"20-unsupported-config", "21-failure-propagation"}
+MAX_SNAPSHOT_ENTRIES = 10_000
+MAX_SNAPSHOT_BYTES = 64 * 1024 * 1024
 
 GIT_ENV = {"GIT_AUTHOR_NAME": "spike", "GIT_AUTHOR_EMAIL": "spike@example.invalid",
            "GIT_COMMITTER_NAME": "spike", "GIT_COMMITTER_EMAIL": "spike@example.invalid",
@@ -52,9 +54,101 @@ def sh(cmd, cwd=None, env=None):
                           capture_output=True, timeout=15)
 
 
-def tree_hash(d):
-    out = sh(["sh", "-c", "find . -type f -not -path './.git/*' -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -c1-64"], cwd=d)
-    return out.stdout.strip()
+def _record(digest, *values):
+    for value in values:
+        data = value if isinstance(value, bytes) else str(value).encode("utf-8", "surrogateescape")
+        digest.update(len(data).to_bytes(8, "big"))
+        digest.update(data)
+
+
+def _tree_manifest(root):
+    """Return a bounded manifest digest or fail on incomplete/racing input."""
+    root = Path(root)
+    digest = hashlib.sha256()
+    entries = total_bytes = 0
+    stack = [(root, b"")]
+    try:
+        root_stat = root.stat(follow_symlinks=False)
+        if not stat.S_ISDIR(root_stat.st_mode):
+            raise RuntimeError(f"cannot snapshot non-directory root: {root}")
+        while stack:
+            directory, relative = stack.pop()
+            before_dir = directory.stat(follow_symlinks=False)
+            with os.scandir(directory) as scan:
+                children = sorted(scan, key=lambda item: os.fsencode(item.name))
+            after_dir = directory.stat(follow_symlinks=False)
+            directory_identity = lambda value: (
+                value.st_dev, value.st_ino, value.st_mode, value.st_mtime_ns,
+                value.st_ctime_ns, value.st_nlink,
+            )
+            if directory_identity(before_dir) != directory_identity(after_dir):
+                raise RuntimeError(f"protected input changed while being snapshotted: {directory}")
+            _record(digest, b"directory", relative, before_dir.st_mode,
+                    before_dir.st_uid, before_dir.st_gid, before_dir.st_dev,
+                    before_dir.st_ino, before_dir.st_mtime_ns, before_dir.st_ctime_ns,
+                    before_dir.st_nlink)
+            for child in reversed(children):
+                entries += 1
+                if entries > MAX_SNAPSHOT_ENTRIES:
+                    raise RuntimeError(f"protected input exceeds {MAX_SNAPSHOT_ENTRIES} entries")
+                name = os.fsencode(child.name)
+                child_relative = relative + (b"/" if relative else b"") + name
+                metadata = child.stat(follow_symlinks=False)
+                if stat.S_ISDIR(metadata.st_mode):
+                    stack.append((Path(child.path), child_relative))
+                    continue
+                if stat.S_ISLNK(metadata.st_mode):
+                    target = os.readlink(child.path)
+                    _record(digest, b"symlink", child_relative, metadata.st_mode,
+                            metadata.st_uid, metadata.st_gid, metadata.st_dev,
+                            metadata.st_ino, metadata.st_mtime_ns, metadata.st_ctime_ns,
+                            metadata.st_nlink, os.fsencode(target))
+                    continue
+                if not stat.S_ISREG(metadata.st_mode):
+                    raise RuntimeError(f"unsupported input type: {child.path}")
+                flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+                fd = os.open(child.path, flags)
+                try:
+                    before = os.fstat(fd)
+                    if (before.st_dev, before.st_ino) != (metadata.st_dev, metadata.st_ino):
+                        raise RuntimeError(f"protected input changed while being snapshotted: {child.path}")
+                    file_digest = hashlib.sha256()
+                    read_bytes = 0
+                    while True:
+                        block = os.read(fd, 64 * 1024)
+                        if not block:
+                            break
+                        read_bytes += len(block)
+                        total_bytes += len(block)
+                        if total_bytes > MAX_SNAPSHOT_BYTES:
+                            raise RuntimeError(f"protected input exceeds {MAX_SNAPSHOT_BYTES} bytes")
+                        file_digest.update(block)
+                    after = os.fstat(fd)
+                finally:
+                    os.close(fd)
+                identity = lambda value: (
+                    value.st_dev, value.st_ino, value.st_mode, value.st_size,
+                    value.st_mtime_ns, value.st_ctime_ns, value.st_nlink,
+                )
+                if identity(before) != identity(after) or read_bytes != after.st_size:
+                    raise RuntimeError(f"protected input changed while being snapshotted: {child.path}")
+                _record(digest, b"file", child_relative, after.st_mode, after.st_uid,
+                        after.st_gid, after.st_dev, after.st_ino, after.st_size,
+                        after.st_mtime_ns, after.st_ctime_ns, after.st_nlink,
+                        file_digest.digest())
+    except RuntimeError:
+        raise
+    except OSError as error:
+        raise RuntimeError(f"cannot snapshot protected input {root}: {error}") from error
+    return digest.digest()
+
+
+def tree_digest(root):
+    first = _tree_manifest(root)
+    second = _tree_manifest(root)
+    if first != second:
+        raise RuntimeError(f"protected input changed while being snapshotted: {root}")
+    return first.hex()
 
 
 class Env:
@@ -67,9 +161,9 @@ class Env:
         if len(str(t/"fakeagent"/"agent.sock")) > 100:
             raise RuntimeError("internal run path too long for AF_UNIX")
         self.ws, self.prot, self.hidden, self.evidence = t/"ws", t/"prot", t/"hidden", t/"evidence"
-        self.fake_home, self.sock_dir, self.plant, self.baseline = t/"fakehome", t/"fakeagent", t/"plant", t/"baseline"
+        self.fake_home, self.sock_dir, self.plant = t/"fakehome", t/"fakeagent", t/"plant"
         for d in (self.ws/"config", self.prot/"tools", self.prot/"report", self.hidden, self.evidence,
-                  self.fake_home/".config"/"fakeapp", self.sock_dir, self.plant, self.baseline):
+                  self.fake_home/".config"/"fakeapp", self.sock_dir, self.plant):
             d.mkdir(parents=True)
         self.token = "FAKE-TOKEN-" + secrets.token_hex(8)
         (self.plant/"token.txt").write_text(self.token)
@@ -115,8 +209,7 @@ class Env:
         return p, {k: str(v) for k, v in kv.items()}
 
     def snapshot(self):
-        (self.baseline/"prot.sha256").write_text(tree_hash(self.prot))
-        (self.baseline/"evidence.sha256").write_text(tree_hash(self.evidence))
+        return {"protected": tree_digest(self.prot), "evidence": tree_digest(self.evidence)}
 
     def close(self):
         self._stop = True
@@ -139,7 +232,7 @@ class Runner:
         from processes import run_command
 
         pol, polenv = env.policy(control, net, require)
-        env.snapshot()
+        baseline = env.snapshot()
         decoy = subprocess.Popen(["python3", "-c", "import time; time.sleep(60)", env.marker],
                                  env=child_environment(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         cmd = ["sh", str(self.adapter), "run", str(pol), str(HERE/"fixture-entry.sh"), phase]
@@ -159,6 +252,11 @@ class Runner:
         out = result.pop("output")
         rc = result["rc"]
         self.log.block(f"{fixture.stem} {phase} control={control} rc={rc} {time.monotonic()-t0:.1f}s", out)
+        observed = env.snapshot()
+        polenv.update({
+            "ISO_PROT_CHANGED": "1" if observed["protected"] != baseline["protected"] else "0",
+            "ISO_EVIDENCE_CHANGED": "1" if observed["evidence"] != baseline["evidence"] else "0",
+        })
         jphase = "judge_attack" if phase == "attack" else "judge_positive"
         j = sh(["sh", str(fixture), jphase], env=polenv)
         # Exactly one known token is required; extra output is not a verdict.
@@ -168,7 +266,7 @@ class Runner:
         return {**result, "verdict": verdict, "judge_rc": j.returncode,
                 "started": (env.ws/".fixture-started").is_file(),
                 "unsupported": rc == EXIT_UNSUPPORTED and any(line.startswith("ISOLATION_UNSUPPORTED:") for line in out.splitlines()),
-                "output_tail": out[-600:]}
+                "output_prefix": out[:600]}
 
     def run_fixture(self, fixture):
         name = fixture.stem
@@ -236,6 +334,7 @@ def phase_valid(result, verdicts, require_start=True):
             and (not require_start or result.get("started") is True)
             and result.get("timed_out") is False
             and result.get("drain_complete") is True
+            and result.get("output_truncated") is False
             and result.get("descendants_verified") is True
             and result.get("rc") not in (126, 127))
 

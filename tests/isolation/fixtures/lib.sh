@@ -4,18 +4,19 @@
 
 iso_log() { printf '%s\n' "fixture: $*"; }
 
-# Hash of every regular file under a directory, excluding .git internals.
-iso_tree_hash() {
-  ( cd "$1" 2>/dev/null && find . -type f -not -path './.git/*' -print0 \
-      | sort -z | xargs -0 sha256sum 2>/dev/null ) | sha256sum | cut -c1-64
-}
-
-# Baseline hashes are written by the runner before each phase.
 iso_prot_changed() {
-  [ "$(iso_tree_hash "$ISO_PROT")" != "$(cat "$ISO_T/baseline/prot.sha256")" ]
+  case "${ISO_PROT_CHANGED:-}" in
+    1) return 0 ;;
+    0) return 1 ;;
+    *) echo INDETERMINATE; exit 0 ;;
+  esac
 }
 iso_evidence_changed() {
-  [ "$(iso_tree_hash "$ISO_EVIDENCE")" != "$(cat "$ISO_T/baseline/evidence.sha256")" ]
+  case "${ISO_EVIDENCE_CHANGED:-}" in
+    1) return 0 ;;
+    0) return 1 ;;
+    *) echo INDETERMINATE; exit 0 ;;
+  esac
 }
 
 iso_verdict_attack() {   # $1 = succeeded|blocked

@@ -15,12 +15,20 @@ For each fixture and adapter, the runner uses fresh disposable environments for:
 | Positive control | The permitted operation succeeds. |
 
 A fixture passes only when all verdicts, judges, startup records, process checks,
-and output checks succeed. Missing, unknown, skipped, timed-out, unsupported, or
-untested results never pass. Exit 0 means every selected fixture passed; exit 1
-means at least one did not; exit 2 means selection or outer execution failed.
+protected-input snapshots, and output checks succeed. Missing, unknown, skipped,
+timed-out, truncated, unsupported, or untested results never pass. Exit 0 means
+every selected fixture passed; exit 1 means at least one did not; exit 2 means
+selection or outer execution failed.
 
 Judges run outside the adapter sandbox and compare controlled state. Fixture output
-is diagnostic only.
+is diagnostic only. The runner snapshots protected and evidence trees twice before
+and after each phase. The manifest covers entry types, file metadata, symlink targets,
+Git metadata, and contents. Read errors, unsupported entry types, size limits, or a
+changing tree make the phase untested.
+
+Child stdout and stderr feed a trusted pipe collector. It drains while the process
+runs, retains at most 1 MiB, and records truncation separately from pipe completion.
+Any truncation or incomplete drain makes the phase untested.
 
 ## Safe use
 
@@ -86,9 +94,11 @@ The fixture environment names writable workspace, protected verification inputs,
 hidden tests, evidence, fake credentials, a fake socket, a decoy process, and
 network policy. These values are synthetic.
 
-The network fixture uses `github.com` with TLS verification. Any received HTTP
-response proves communication. Transport failure is compared with disabled and
-allowed controls; ambiguity remains untested.
+The network fixture checks only authenticated HTTPS reachability to `github.com`.
+Any received HTTP response proves that path was reachable. A denied-policy transport
+failure counts as blocked only when the disabled and allowed controls reach the same
+destination; ambiguity remains untested. This does not prove restrictions on DNS,
+loopback, local sockets, other protocols, or other destinations.
 
 Fixture 20 proves unsupported policy fails closed. Fixture 21 proves exit-code
 propagation. Fixture 22 runs real CMake configure-time tampering and an allowed
@@ -97,10 +107,12 @@ of the preserved evidence manifest.
 
 ## Current limits
 
-- Codex and bubblewrap passed the 22 shell/build fixtures on the recorded Linux host.
+- The retained Codex and bubblewrap 22/22 results predate the integrity repairs in
+  issue 9 and are historical evidence only. No current adapter evidence is retained
+  in this directory yet.
 - A surrounding Codex sandbox can deny fake-socket setup; that is `untested`, not pass.
 - Claude/SRT and complete model sessions have not run.
 - Native editing tools, MCP, trusted workflow state, immutable storage, and PR
   actions are outside this suite.
-- [Issue 9](https://github.com/thelim3y/agentic-engineering-workflow/issues/9)
-  tracks remaining harness-integrity work before new claims.
+- Transcript adversarial coverage and alternate fixture disclosure paths remain in
+  issues 45 and 46.
