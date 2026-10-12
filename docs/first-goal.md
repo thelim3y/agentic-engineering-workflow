@@ -11,7 +11,7 @@ must not be required.
 
 ## Intended experience
 
-1. Install the factory and configure one repository and a conforming runner.
+1. Install the factory and configure one repository plus runner and model defaults.
 2. Label a GitHub issue and start the run manually.
 3. Follow concise terminal progress and respond only when approval is required.
 4. Receive a reviewable PR, its configured merge outcome and a report, or a clear
@@ -21,8 +21,8 @@ must not be required.
 
 - One local deployment and one repository per run.
 - GitHub issue and PR adapters first.
-- One configured runner per run; independently tested adapters prove that core
-  behaviour is runner-independent.
+- Each role uses its configured runner and model, inheriting shared defaults when
+  no override is set. Independently tested adapters prove core runner independence.
 - Sequential roles coordinated by one trusted controller.
 - Protected local execution, durable checkpoints and a file-based audit provider.
 - Strong defaults with minimal required configuration.
