@@ -1,6 +1,7 @@
 # Software factory design
 
-Status: design contracts; runtime not implemented. The factory is public,
+Status: design contracts and an implemented [file audit baseline](audit-v1.md);
+the controller is not implemented. The factory is public,
 local-friendly, and independent of any LLM, provider, model, or agent host.
 Plugins and other host integrations are entry points, not security boundaries.
 
@@ -24,6 +25,7 @@ shared agent entry point. Planned work lives in
 | [Execution](execution.md) | Permissions, workspaces, credentials, and enforcement. |
 | [Checkpoints](checkpoints.md) | Ownership, effects, retries, and recovery. |
 | [Audit](audit.md) | Immutable history, artifacts, retention, and limits. |
+| [File audit v1](audit-v1.md) | Implemented envelope/API, local persistence, recovery, usage and measured limits. |
 | [Verification](verification.md) | Test quality, gates, and native profiles. |
 | [Evaluation](evaluation.md) | Trials, metrics, regressions, and release evidence. |
 | [Retrieval](retrieval.md) | Scoped and versioned supporting context. |
@@ -39,7 +41,8 @@ shared agent entry point. Planned work lives in
 ## Authority and scope
 
 Each topic has one owner above. Other documents summarize; they do not redefine.
-Records use one versioned product contract. Schemas remain implementation work.
+Records use one versioned product contract. The minimal audit envelope has a Python
+implementation; full record schemas and controller integration remain separate work.
 The initial runtime and support boundary are fixed by [ADR-0003](decisions/0003-initial-runtime-boundary.md).
 
 These documents contain the current design. Unsettled proposals belong in issues

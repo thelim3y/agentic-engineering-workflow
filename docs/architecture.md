@@ -1,9 +1,10 @@
 # Architecture overview
 
-Status: required design, not implemented. Storage and enforcement technology remain
-undecided. [ADR-0003](decisions/0003-initial-runtime-boundary.md) fixes the initial
-single-host Python/Linux deployment boundary. This diagram shows logical components,
-not separate services or agent order.
+Status: required design with a working [file audit baseline](audit-v1.md); the full
+controller is not implemented. Broader storage and enforcement remain undecided.
+[ADR-0003](decisions/0003-initial-runtime-boundary.md) fixes the initial single-host
+Python/Linux deployment boundary. This diagram shows logical components, not
+separate services or agent order.
 
 ## Components and interfaces
 
