@@ -1,6 +1,6 @@
 # Software factory design
 
-Status: agreed contracts; runtime not implemented. The factory is public,
+Status: design contracts; runtime not implemented. The factory is public,
 local-friendly, and independent of any LLM, provider, model, or agent host.
 Plugins and other host integrations are entry points, not security boundaries.
 
@@ -39,6 +39,9 @@ shared agent entry point. Planned work lives in
 Each topic has one owner above. Other documents summarize; they do not redefine.
 Records use one versioned product contract. Schemas and runtime language remain
 implementation work.
+
+These documents contain the current design. Unsettled proposals belong in issues
+or explicitly proposed ADRs, not mixed into authoritative contract text.
 
 C++ is first; .NET/C# follows. Python remains a candidate. GitHub is initial;
 Jira and local models are later. Engram is the only selected real memory backend.
