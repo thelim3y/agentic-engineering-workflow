@@ -18,6 +18,7 @@ shared agent entry point. Planned work lives in
 | [Workflow](workflow.md) | Stage order, handoffs, issue state, and completion. |
 | [Planner](planner.md) | Clarity, planning, size, risk, and escalation. |
 | [Interfaces](interfaces.md) | Product-owned adapter contracts and capabilities. |
+| [Runner adapters](runner-adapters.md) | Public adapter responsibilities, lifecycle, conformance, and trust. |
 | [Communication](communication-protocol.md) | Invocation, report, evidence, and approval records. |
 | [Execution](execution.md) | Permissions, workspaces, credentials, and enforcement. |
 | [Checkpoints](checkpoints.md) | Ownership, effects, retries, and recovery. |
