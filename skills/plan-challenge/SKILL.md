@@ -42,9 +42,11 @@ A `ready` result is not approval. Do not make plan changes after giving the resu
 
 ## Size
 
-Apply the size bands in the planning rules. Report the band only when it affects the
-review. For XL or broader work, ask the human whether to continue, reduce, or split
-it. Do not split the work or create follow-up items yourself.
+Apply the size bands in the planning rules. During drafting, report the band when
+size or scope is the current concern; name the band explicitly. Every final check
+reports the band and a concise reason. For XL or broader work, ask the human whether
+to continue, reduce, or split it. Do not split the work or create follow-up items
+yourself.
 
 ## Unknown facts
 
