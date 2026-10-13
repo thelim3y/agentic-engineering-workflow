@@ -9,12 +9,22 @@ Drafting review.
 Task: Add automatic deletion of expired local audit files. The task does not state
 how long files must be retained.
 
+Use only these complete policy facts for this case:
+
+- only closed audit files can expire; the active file is never eligible;
+- every closed file uses the same retention period, with no protected class or
+  legal-hold exception; and
+- a deletion failure must be reported and must leave that file in place.
+
 Plan:
 
-1. Delete audit files after 30 days.
-2. Test deletion of files older than 30 days.
+1. Delete closed audit files after 30 days and never delete the active file.
+2. Test deletion of an older closed file and preservation of a younger closed file
+   and the active file.
+3. Test that a deletion failure is reported and leaves the file in place.
 
-No applicable product document or configuration defines a retention period.
+No applicable product document or configuration defines the one remaining policy
+value: the retention period.
 
 ## Required result
 

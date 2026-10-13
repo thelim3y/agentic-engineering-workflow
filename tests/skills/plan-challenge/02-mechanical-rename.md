@@ -6,6 +6,15 @@ Final check.
 
 ## Input
 
+Use only this complete, isolated sample-project snapshot for this case. Do not
+compare its paths with the working repository:
+
+- `src/audit/v1.py` exists and owns audit-event handling;
+- `src/audit/__init__.py` and `tests/audit/test_events.py` are its only references;
+- it has no public package export, generated reference, configuration entry, or
+  compatibility requirement; and
+- the sample project's affected tests and full test suite currently pass.
+
 Task: Rename `src/audit/v1.py` to `src/audit/events_v1.py` because the file owns
 audit-event handling. Update its imports and the tests that import it. Preserve
 behaviour.
@@ -13,11 +22,8 @@ behaviour.
 Plan:
 
 1. Rename the file.
-2. Update direct imports and test paths found by repository search.
-3. Run the affected tests and the full test suite.
-
-Repository inspection shows no public package export, generated reference, or
-configuration entry for the old path.
+2. Update the two listed references.
+3. Run the sample project's affected tests and full test suite.
 
 ## Required result
 
