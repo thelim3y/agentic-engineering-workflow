@@ -35,6 +35,7 @@ Check that:
 - work is small, ordered, and tied to requirements;
 - acceptance criteria and important failures have verification;
 - risks, blockers, and omissions are visible;
+- every new copy, path, abstraction, or dependency is named and intended;
 - claims do not exceed their evidence.
 
 Keep facts, assumptions, proposals, guidance, decisions, and unknowns distinct.
