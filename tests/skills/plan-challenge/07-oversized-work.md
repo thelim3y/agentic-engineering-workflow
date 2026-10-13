@@ -6,6 +6,16 @@ Drafting review.
 
 ## Input
 
+Use only this complete, isolated sample-project snapshot for this case. Do not
+compare it with the working repository:
+
+- `skills/plan-challenge/SKILL.md` does not exist;
+- the approved planning document authorizes only that skill and its existing tests;
+- controller work, issue creation, planning agents, and task migration are explicit
+  non-goals; and
+- the audit schema and Jira integration have separate owners and no authorization
+  in this task.
+
 Task: Add the plan-challenge skill described by the approved planning document.
 
 Plan:
@@ -16,10 +26,6 @@ Plan:
 4. Add GitHub and Jira issue creation.
 5. Create separate planner and verifier agents.
 6. Migrate every existing task to the new workflow.
-
-The approved scope excludes controller work, issue creation, and planning agents.
-The audit schema and Jira integration have separate owners and no authorization in
-this task.
 
 ## Required result
 

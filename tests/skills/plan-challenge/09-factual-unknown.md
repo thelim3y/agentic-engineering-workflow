@@ -6,7 +6,8 @@ Drafting review.
 
 ## Input
 
-Use only this complete, isolated deployment snapshot for this case:
+Use only this complete, isolated deployment snapshot for this case. Do not compare
+it with the working repository:
 
 - the selected runner is OpenAI Codex CLI version 0.42.0 at
   `/opt/sample-host/bin/codex`;

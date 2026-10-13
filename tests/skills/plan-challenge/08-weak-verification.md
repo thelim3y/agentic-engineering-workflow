@@ -6,6 +6,15 @@ Drafting review.
 
 ## Input
 
+Use only this complete, isolated sample-project snapshot for this case. Do not
+compare it with the working repository:
+
+- the sample file provider has no append operation yet;
+- its existing format and read path are already specified and tested;
+- append success must make the new record readable after every earlier durable
+  record; and
+- append failure must leave every earlier durable record unchanged and readable.
+
 Task: Append audit records without damaging records that are already durable. A
 failed append must leave earlier records readable.
 
@@ -14,7 +23,7 @@ Plan:
 1. Implement append.
 2. Test that two successful appends can be read back in order.
 
-The plan contains no failure injection or other evidence for the required failed
+The plan proposes no failure injection or other evidence for the required failed
 append behaviour.
 
 ## Required result

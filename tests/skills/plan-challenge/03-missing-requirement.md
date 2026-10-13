@@ -9,7 +9,8 @@ Drafting review.
 Task: Add automatic deletion of expired local audit files. The task does not state
 how long files must be retained.
 
-Use only these complete policy facts for this case:
+Use only this complete, isolated sample-product snapshot for this case. Do not
+compare it with the working repository:
 
 - only closed audit files can expire; the active file is never eligible;
 - every closed file uses the same retention period, with no protected class or
