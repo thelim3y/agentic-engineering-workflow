@@ -6,17 +6,26 @@ Drafting review.
 
 ## Input
 
-Task: Use the selected runner's documented non-interactive mode for the initial
+Use only this complete, isolated deployment snapshot for this case:
+
+- the selected runner is OpenAI Codex CLI version 0.42.0 at
+  `/opt/sample-host/bin/codex`;
+- the review context cannot invoke that sample-host binary;
+- no captured help output or applicable official-documentation citation is
+  available; and
+- whether this exact runner version supports a `--non-interactive` flag is not
+  established.
+
+Task: Use OpenAI Codex CLI 0.42.0's documented non-interactive mode for the initial
 skill evaluation.
 
 Plan:
 
-1. Invoke the runner with `--non-interactive`.
+1. Invoke `/opt/sample-host/bin/codex` with `--non-interactive`.
 2. Capture its exit status and report.
 
-Current repository documents identify the runner but do not state whether that
-flag exists. No checked-in adapter, help output, or cited current documentation
-answers the question.
+The bounded research target is the installed binary's local help on the sample host
+or official OpenAI documentation applicable to Codex CLI 0.42.0.
 
 ## Required result
 
