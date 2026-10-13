@@ -24,6 +24,7 @@ CASES = (
     "08-weak-verification.md",
     "09-factual-unknown.md",
     "10-several-problems.md",
+    "11-unintended-shape.md",
 )
 
 REQUIRED_SECTIONS = (
@@ -97,6 +98,9 @@ class ProtectedPlanChallengeCases(unittest.TestCase):
 
     def test_several_problems(self) -> None:
         self.assert_case_is_complete(CASES[9])
+
+    def test_unintended_shape(self) -> None:
+        self.assert_case_is_complete(CASES[10])
 
 
 if __name__ == "__main__":
