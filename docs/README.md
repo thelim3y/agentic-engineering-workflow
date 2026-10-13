@@ -18,7 +18,8 @@ shared agent entry point. Planned work lives in
 | [First goal](first-goal.md) | Initial product outcome, operating shape, and limits. |
 | [Architecture](architecture.md) | Components, trust boundaries, and scope. |
 | [Workflow](workflow.md) | Stage order, handoffs, issue state, and completion. |
-| [Planner](planner.md) | Clarity, planning, size, risk, and escalation. |
+| [Planning](planning.md) | Human plan ownership, challenge, size, risk, and decisions. |
+| [Agent work rules](agent-work-rules.md) | Shared terms, ownership, scope, evidence, and handoffs. |
 | [Interfaces](interfaces.md) | Product-owned adapter contracts and capabilities. |
 | [Runner adapters](runner-adapters.md) | Public adapter responsibilities, lifecycle, conformance, and trust. |
 | [Communication](communication-protocol.md) | Invocation, report, evidence, and approval records. |
