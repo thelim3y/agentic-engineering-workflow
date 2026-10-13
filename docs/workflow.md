@@ -10,16 +10,17 @@ selection. The eligibility label is required in both cases. Validate configurati
 adapter capabilities and dependencies before claiming work. Unknown dependency status
 blocks selection; it does not mean unblocked. Atomically claim the task before execution.
 
-The planner reads the original task, requirements, acceptance criteria and constraints;
-inspects relevant project context; and produces a concise plan, useful steps and size
-assessment. Below Large and Large notify and proceed; XL+ requires approval. Any
-unclear requirement or unexpected safety concern pauses at any size. See [planner](planner.md).
+The human writes and approves the task and plan. The plan-challenge skill checks the
+draft against the original requirements, constraints, and relevant project context
+without editing it. Below Large and Large notify and proceed; XL+ requires human
+approval. Any unclear requirement or unexpected safety concern pauses at any size.
+See [planning](planning.md).
 
 ## Delivery
 
 ```mermaid
 flowchart TD
-    Start["Manual start and eligibility"] --> Plan["Planner and approval gate"]
+    Start["Manual start and eligibility"] --> Plan["Human plan and challenge"]
     Plan --> TDD["TDD: test batch"]
     TDD --> Red["Testing: establish intended red"]
     Red -->|"Valid red or authorized bootstrap"| Impl["Implementer: production only"]
@@ -66,10 +67,11 @@ eligibility immediately before PR publication and merge. Restoring the label onl
 restores eligibility; it does not automatically resume work. Document the unavoidable
 race with remote changes after dispatch and report any already-applied action honestly.
 
-Preserve the original issue snapshot. Material edits pause for planner impact review;
-invalidate affected plan, tests, evidence and approvals. Harmless wording edits do not
-require a restart, but uncertain impact must not silently pass. Task text cannot alter
-configuration or permissions. Scope growth is reassessed under the same size/risk rules.
+Preserve the original issue snapshot. Material edits pause for human impact review,
+using the plan-challenge skill; invalidate affected plan, tests, evidence and approvals.
+Harmless wording edits do not require a restart, but uncertain impact must not silently
+pass. Task text cannot alter configuration or permissions. Scope growth is reassessed
+under the same size/risk rules.
 
 ## Completion and reporting
 

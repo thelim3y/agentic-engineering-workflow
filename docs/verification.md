@@ -11,7 +11,7 @@ meaningful batches as interfaces and implementation needs become clear.
 
 The implementer proposes the smallest needed interface using project conventions;
 TDD checks that the required behaviour is testable. Neither silently resolves unclear
-requirements: those return to the planner and user.
+requirements: those return to the human, using the plan-challenge skill.
 
 Map each acceptance criterion to tests or another justified verification method.
 Identify uncovered requirements and limits; coverage percentages alone do not prove
