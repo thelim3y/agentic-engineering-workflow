@@ -1,7 +1,8 @@
 # Plan: Human-authored planning and plan challenge
 
-Status: approved planning decision. Skill implementation has not started. Approval
-of this document does not authorize issue creation or implementation work.
+Status: implemented on 12 October 2026. Authoritative behaviour lives in
+`docs/planning.md`, `docs/agent-work-rules.md`, and
+`skills/plan-challenge/SKILL.md`. This file records the approved delivery plan.
 
 ## Decision
 
@@ -87,9 +88,9 @@ must not trigger research.
 
 A high-risk plan gets its final check from a fresh context.
 
-## Proposed tests
+## Tests
 
-No tests exist yet. These ten cases must be written before the skill:
+The protected cases are in `tests/skills/plan-challenge/`:
 
 | Case | Required result |
 | --- | --- |
@@ -109,7 +110,7 @@ Tests judge the decision, not exact wording.
 
 ## Work
 
-1. Move the approved [shared agent work rules](agent-work-rules.md) to
+1. Move the approved [shared agent work rules](../docs/agent-work-rules.md) to
    `docs/agent-work-rules.md` and add them to the design index.
 2. Replace `docs/planner.md` with `docs/planning.md`. Record human plan ownership,
    challenge behaviour, optional research, and size handling. Update all links.

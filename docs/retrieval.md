@@ -12,7 +12,7 @@ Use retrieval where it helps a task, not as a mandatory extra step for every act
 
 | Consumer | Useful retrieved context |
 |---|---|
-| Planner | Relevant code, architecture decisions, project documentation, and approved lessons. |
+| Plan challenge | Relevant code, architecture decisions, project documentation, and approved lessons. |
 | TDD | Existing test patterns and interfaces, relevant documentation, and approved testing lessons. |
 | Implementer | Permitted source code, reusable components, interfaces, and approved coding lessons. |
 | PR reviewer | Related code, design decisions, and known pitfalls relevant to the change. |

@@ -1,7 +1,7 @@
-# Proposed shared agent work rules
+# Shared agent work rules
 
-Status: approved for this planning work. It is not runtime policy until promoted
-to `docs/agent-work-rules.md` and authorizes no implementation or controller work.
+Status: required behaviour for every factory agent. Controller enforcement is not
+implemented.
 
 ## Purpose
 
@@ -46,7 +46,7 @@ while reaching that result and when the work fails.
 ### Preserve authority
 
 Why: supporting context must not silently become a requirement. This extends the
-[existing planning rule](../docs/planner.md) to every role.
+[planning rule](planning.md) to every role.
 
 - Use the authorized task and applicable contracts as requirements. Other context
   may support a fact or proposal; it does not create authority.
@@ -61,7 +61,7 @@ Why: supporting context must not silently become a requirement. This extends the
 
 Why: behaviour belongs with the component responsible for it, not whichever
 component can conveniently enforce it. This builds on the role ownership in the
-[execution contract](../docs/execution.md).
+[execution contract](execution.md).
 
 - Give each indivisible requirement one accountable owner.
 - Split a requirement when separate parts belong to different owners. Record the
@@ -79,7 +79,7 @@ secret classification.
 ### Control scope
 
 Why: plans and unrelated findings must not expand the approved change. This makes
-the [workflow's scope rule](../docs/workflow.md) explicit for all roles.
+the [workflow's scope rule](workflow.md) explicit for all roles.
 
 - Map every work item to an approved requirement.
 - Do not implement a non-goal. Document it when needed to preserve the boundary.
@@ -89,7 +89,7 @@ the [workflow's scope rule](../docs/workflow.md) explicit for all roles.
 ### Require evidence
 
 Why: a plausible change or passing command proves only what it exercised. This
-extends the [verification contract](../docs/verification.md) from acceptance
+extends the [verification contract](verification.md) from acceptance
 criteria to affected invariants.
 
 - Identify relevant invariants and their owners.
@@ -101,7 +101,7 @@ criteria to affected invariants.
 ### Make handoffs honest
 
 Why: missing work must not hide behind an agent's completion claim. This makes the
-reporting rules in the [communication contract](../docs/communication-protocol.md)
+reporting rules in the [communication contract](communication-protocol.md)
 explicit across handoffs.
 
 - Distinguish the requested outcome from the actual outcome. State completed and

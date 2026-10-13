@@ -20,7 +20,7 @@ sources. Its command syntax is not yet defined. Never invent permissive defaults
 ## Configurable areas
 
 - Issue provider/repository, trigger/state labels, ordering and shortlist size.
-- Size assessment, notification and approval policy within planner constraints.
+- Size assessment, notification and approval policy within the planning rules.
 - Per-role runner/provider/model, context limits and visibility policy.
 - Retry/dispute rounds, timeouts, resource limits, concurrency and total run budgets.
 - Project verification profiles, required/optional lanes and justified skip policy.

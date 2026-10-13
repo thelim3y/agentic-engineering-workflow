@@ -24,7 +24,6 @@ model. Children inherit the same restrictions. Reject unsupported configurations
 
 | Role | May change | Cannot authorize |
 |---|---|---|
-| Planner | Its proposed plan and findings | Production/tests, missing requirements or gate bypasses. |
 | TDD | Tests, fixtures and test assets within the approved task | Weakened acceptance criteria, policy or verifier control. |
 | Implementer | Production code and permitted production build inputs | Any tests or protected verification inputs. |
 | Testing / pre-PR / PR review | Reports and permitted temporary build outputs | Source fixes, test fixes or their own passing gate. |
@@ -39,7 +38,7 @@ alone cannot determine ownership.
 
 The implementer may request a test correction with evidence, but cannot apply it.
 TDD handles clear corrections; disputed behaviour or reduced coverage requires
-human approval bound to the exact proposal. Requirement gaps return to the planner.
+human approval bound to the exact proposal. Requirement gaps return to human planning.
 
 ## Workspaces and verification
 
