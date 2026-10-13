@@ -23,6 +23,10 @@ Treat only the task, applicable product rules, and authorized decisions as
 requirements. Keep facts, assumptions, proposals, guidance, decisions, and unknowns
 distinct. An example or suggestion is not a requirement.
 
+Correcting an ownership boundary must not drop a requirement. Ask the human to
+reassign the required work or explicitly split it while retaining every required
+outcome.
+
 ## Review
 
 Check the plan against the review points in the planning rules. Base each concern on
