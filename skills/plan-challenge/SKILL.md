@@ -36,7 +36,8 @@ Use the mode requested by the human:
 
 - During drafting, raise exactly one unresolved concern at a time. State the
   concern, why it matters, and ask one specific question for the one decision or
-  change needed. Do not bundle related decisions or other concerns into it. Return
+  change needed. When size or scope is that concern, explicitly state its size
+  band. Do not bundle related decisions or other concerns into it. Return
   `not_ready`. If there is no concern, return `ready` with a brief reason.
 - For a final check, report every unresolved concern. For each, state the concern,
   why it matters, and the decision or change needed. Return `not_ready`. Return
