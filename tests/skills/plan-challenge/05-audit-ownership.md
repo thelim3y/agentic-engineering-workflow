@@ -6,6 +6,15 @@ Drafting review.
 
 ## Input
 
+Use only this complete, isolated sample-product snapshot for this case. Do not
+compare it with the working repository:
+
+- the event producer creates event content;
+- the controller accepts or rejects that content;
+- the file audit provider owns only storage format, serialization, append,
+  integrity, durability, and recovery; and
+- the producer or controller owns secret classification and safe event content.
+
 Task: Ensure audit records contain no secrets.
 
 Plan:
@@ -13,10 +22,6 @@ Plan:
 1. Add secret classification and redaction to the file audit provider.
 2. Scan each event immediately before serialization.
 3. Test the provider with API keys and access tokens.
-
-Applicable shared rule: the producer or controller owns safe event content. The file
-audit provider owns storage format, serialization, append, integrity, durability,
-and recovery. It does not own secret classification.
 
 ## Required result
 
