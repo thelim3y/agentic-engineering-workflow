@@ -83,10 +83,11 @@ command is an open pull request.
 
 ## Open questions for the design
 
-- **Hidden or read-only tests.** The design intends test-visibility limits for the
-  implementer. ImpossibleBench measures a trade-off: hidden tests stop cheating but
-  lower legitimate performance; read-only tests keep performance but allow
-  special-casing. Which does the implementer get?
+- **Hidden or read-only tests.** The current intent, in `docs/execution.md` and
+  [#40](https://github.com/thelim3y/agentic-engineering-workflow/issues/40), is that
+  implementation cannot read tests. ImpossibleBench measures a trade-off: hidden tests
+  stop cheating but lower legitimate performance; read-only tests keep performance but
+  allow special-casing. Which does the implementer get?
 - **Escape classes.** The trust research lists escape routes from vendor advisories
   that `docs/execution.md` does not name: shell startup files; git configuration,
   hooks, fsmonitor and worktree metadata; executables looked up by bare name; agent
