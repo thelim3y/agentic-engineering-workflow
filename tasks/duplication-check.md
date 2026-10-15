@@ -49,7 +49,8 @@ change.
 Tool: PMD CPD, ignoring identifiers and literals. On synthetic C++ fixtures it
 caught the renamed and small-edit copies and stayed silent on the
 convention-similar code from 70 to 245 tokens. Its report lists every scanned
-file, which the scan inventory needs.
+file, which the scan inventory needs. Evidence:
+[duplication tool status](../docs/spikes/duplication-tools.md).
 
 ## Where it runs
 
