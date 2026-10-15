@@ -45,10 +45,10 @@ version, thresholds, paths and exclusions are protected verification inputs unde
 [execution](../docs/execution.md). Changing them needs an authorized configuration
 change.
 
-Unknown: no candidate tool has been run against the fixtures. Selection turns on
-one pair: the tool must match the small-edit copy without matching the
-convention-similar code. If no tool passes, stop for a human decision before
-writing a detector.
+Tool: PMD CPD, ignoring identifiers and literals. On synthetic C++ fixtures it
+caught the renamed and small-edit copies and stayed silent on the
+convention-similar code from 70 to 245 tokens. Its report lists every scanned
+file, which the scan inventory needs.
 
 ## Where it runs
 
