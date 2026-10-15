@@ -27,8 +27,9 @@ This covers copies of base code and copies made within the change.
 - A base pair the change edits is reported; the human can keep it.
 - Each finding names both files and line ranges.
 
-The profile sets scanned paths, languages, minimum fragment size and similarity
-threshold. C++ is first.
+Only production paths are scanned; tests repeat setup by convention, which would
+raise false findings. The profile sets those paths, languages, minimum fragment
+size and similarity threshold. C++ is first.
 
 ## Detector
 
@@ -127,9 +128,3 @@ Case 11 is `tests/skills/plan-challenge/11-unintended-shape.md`.
 
 Out of scope: removing duplication already in a project, automatic refactoring,
 AI-review prompts, a detector of our own, and languages after C++.
-
-## Open question
-
-Are test paths scanned? Criterion: catch the #64 failure with the fewest false
-findings. Recommendation: production paths only. The failure was in production
-code, and tests repeat setup by convention, which would raise false findings.
