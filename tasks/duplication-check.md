@@ -40,7 +40,8 @@ It must:
 - match copies with a few statements inserted, removed or changed;
 - report both locations of each pair.
 
-Disable in-source suppression markers; an agent could edit them. The tool, its
+Remove in-source suppression markers from the scanned copy; an agent could add
+them. Intended copies are marked only by the human's approval. The tool, its
 version, thresholds, paths and exclusions are protected verification inputs under
 [execution](../docs/execution.md). Changing them needs an authorized configuration
 change.
