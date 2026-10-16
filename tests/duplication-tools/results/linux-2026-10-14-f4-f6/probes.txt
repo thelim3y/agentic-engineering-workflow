@@ -1,0 +1,8 @@
+cpd, CPD-OFF/CPD-ON around the F1 copy: 0 pairs (max 0 tokens)
+jscpd, ignore-start/end around the F1 copy: 0 pairs (max 0 tokens)
+jscpd, .jscpd.json ignoring the copy: run inside tree 0 pairs (max 0 tokens); run outside 2 pairs (max 494 tokens)
+jscpd, package.json ignoring the copy: run inside tree 0 pairs (max 0 tokens); run outside 2 pairs (max 494 tokens)
+jscpd, .gitignore lists the committed copy: default 0 pairs (max 0 tokens); --no-gitignore 2 pairs (max 494 tokens)
+cpd, .gitignore lists the committed copy: 1 pairs (max 581 tokens)
+jscpd --baseline-from-ref main: old 629 tokens [('forward_pass.cpp', 1, 92), ('old_copy.cpp', 1, 92)]
+jscpd --baseline-from-ref main: new 462 tokens [('forward_pass.cpp', 26, 81), ('terrain_pass.cpp', 45, 101)]

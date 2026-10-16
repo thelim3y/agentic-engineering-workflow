@@ -1,0 +1,24 @@
+k=default f1: forward_pass.cpp~terrain_pass.cpp similarity=1.00 longest-fragment=180
+k=default f2: forward_pass.cpp~terrain_pass.cpp similarity=0.90 longest-fragment=74
+k=default f3: forward_pass.cpp~tonemap_pass.cpp similarity=0.53 longest-fragment=21
+k=default f4: forward_pass.cpp~outline_pass.cpp similarity=0.61 longest-fragment=25
+k=default f5: forward_pass.cpp~water_pass.cpp similarity=0.78 longest-fragment=23
+k=default f6: forward_pass.cpp~sky_pass.cpp similarity=0.62 longest-fragment=21
+k=     12 f1: forward_pass.cpp~terrain_pass.cpp similarity=1.00 longest-fragment=184
+k=     12 f2: forward_pass.cpp~terrain_pass.cpp similarity=0.92 longest-fragment=132
+k=     12 f3: forward_pass.cpp~tonemap_pass.cpp similarity=0.68 longest-fragment=24
+k=     12 f4: forward_pass.cpp~outline_pass.cpp similarity=0.77 longest-fragment=29
+k=     12 f5: forward_pass.cpp~water_pass.cpp similarity=0.88 longest-fragment=26
+k=     12 f6: forward_pass.cpp~sky_pass.cpp similarity=0.77 longest-fragment=23
+k=     16 f1: forward_pass.cpp~terrain_pass.cpp similarity=1.00 longest-fragment=200
+k=     16 f2: forward_pass.cpp~terrain_pass.cpp similarity=0.91 longest-fragment=88
+k=     16 f3: forward_pass.cpp~tonemap_pass.cpp similarity=0.64 longest-fragment=25
+k=     16 f4: forward_pass.cpp~outline_pass.cpp similarity=0.71 longest-fragment=36
+k=     16 f5: forward_pass.cpp~water_pass.cpp similarity=0.83 longest-fragment=26
+k=     16 f6: forward_pass.cpp~sky_pass.cpp similarity=0.74 longest-fragment=25
+k=     30 f1: forward_pass.cpp~terrain_pass.cpp similarity=1.00 longest-fragment=186
+k=     30 f2: forward_pass.cpp~terrain_pass.cpp similarity=0.87 longest-fragment=87
+k=     30 f3: forward_pass.cpp~tonemap_pass.cpp similarity=0.46 longest-fragment=19
+k=     30 f4: forward_pass.cpp~outline_pass.cpp similarity=0.56 longest-fragment=26
+k=     30 f5: forward_pass.cpp~water_pass.cpp similarity=0.73 longest-fragment=21
+k=     30 f6: forward_pass.cpp~sky_pass.cpp similarity=0.54 longest-fragment=19

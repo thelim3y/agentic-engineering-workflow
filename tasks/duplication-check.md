@@ -28,8 +28,8 @@ This covers copies of base code and copies made within the change.
 - Each finding names both files and line ranges.
 
 Only production paths are scanned; tests repeat setup by convention, which would
-raise false findings. The profile sets those paths, languages, minimum fragment
-size and similarity threshold. C++ is first.
+raise false findings. The profile sets those paths, languages and the minimum
+match size; see [calibration](#calibration). C++ is first.
 
 ## Detector
 
@@ -47,11 +47,38 @@ version, thresholds, paths and exclusions are protected verification inputs unde
 [execution](../docs/execution.md). Changing them needs an authorized configuration
 change.
 
-Tool: PMD CPD, ignoring identifiers and literals. On synthetic C++ fixtures it
-caught the renamed and small-edit copies and stayed silent on the
-convention-similar code from 70 to 245 tokens. Its report lists every scanned
-file, which the scan inventory needs. Evidence:
-[duplication tool status](../docs/spikes/duplication-tools.md).
+Tool: PMD CPD, ignoring identifiers and literals. It caught every copy fixture.
+Its report lists every scanned file, which the scan inventory needs; jscpd's does
+not. CPD's margin between copy and convention fixtures is a few tokens, so
+whether a size minimum can decide a finding is an
+[open question](#open-question-what-decides-a-finding). Evidence: [duplication tool status](../docs/spikes/duplication-tools.md).
+
+## Calibration
+
+The minimum match size depends on how much boilerplate a project's conventions
+share, so each project measures it. Before the lane is enabled, run the detector
+over the base's production paths at a range of minimum sizes. The human classes
+each reported pair as convention or copy, then chooses the minimum:
+
+- above the longest convention pair, it misses copies with no unchanged stretch
+  that long;
+- at or below it, it reports convention code, which the human keeps finding by
+  finding.
+
+The run, the classes and the chosen minimum are profile evidence. Copies the
+calibration finds in the base are reported, not removed.
+
+## Open question: what decides a finding
+
+On the fixtures, a size minimum separates copies from convention code by a few
+tokens at most. The human decides, preferably after a run on real project code:
+
+- **Size minimum**, as above. CPD reports each pair with both locations.
+- **Whole-file score.** Dolos separated every fixture only if the outline pass
+  (F4) is convention, and gives no line ranges, so alone it cannot report both
+  locations. This was not a pre-run question.
+- **Combination.** A low CPD minimum locates pairs; a file-level score decides
+  which to report. Not measured.
 
 ## Where it runs
 
@@ -97,6 +124,11 @@ catch deliberate obfuscation, copies below the thresholds, or code that repeats
 behaviour without repeating its text. A pass means no reported copy, not no
 duplication.
 
+A copy is caught only if one unchanged stretch, after identifiers and literals are
+ignored, reaches the minimum. On the fixtures, a copy edited every few statements
+kept an 86-token stretch, against 85 for the outline pass (F4), whose class is
+open.
+
 ## Verification
 
 | Fixture | Expected | Source |
@@ -110,6 +142,7 @@ duplication.
 | Tool unavailable | `blocked` | [Verification](../docs/verification.md): required unavailable lanes block |
 | Empty or reduced scan | `blocked` | [Verification](../docs/verification.md): empty selections and removed tests |
 | Head, base or configuration changed after the run | Evidence stale | #64 acceptance criterion 4 |
+| Calibration over a base with convention code | Every pair at each size, with both locations | Calibration |
 
 Case 11 is `tests/skills/plan-challenge/11-unintended-shape.md`.
 
@@ -119,10 +152,11 @@ Case 11 is `tests/skills/plan-challenge/11-unintended-shape.md`.
    `docs/verification.md` for the lane, evidence and gate, and `docs/workflow.md`
    for routing findings to the human.
 2. TDD writes the fixtures; the implementer cannot change them.
-3. Run candidate tools against the fixtures and record the results. Select one or
-   stop for a decision.
-4. Build the standalone check: head and base in; findings and inventory out. This
-   meets acceptance criterion 2.
+3. Run the chosen detector against those fixtures and record the results. The
+   spike chose it on its own fixtures; if it fails these, stop for a decision.
+4. Build the standalone check: head and base in; findings and inventory out. A
+   calibration mode lists base pairs across minimum sizes. This meets acceptance
+   criterion 2.
 5. Bind it as a pre-PR lane. This needs the record contract (#12), controller (#16)
    and C++ profile (#20), and meets acceptance criteria 3 and 4.
 

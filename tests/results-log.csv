@@ -1,0 +1,11 @@
+date,suite,subject,measure,value,out_of,method,evidence
+2026-10-12,isolation,bubblewrap 0.9.0,fixtures passed,22,22,isolation suite as hashed in SHA256SUMS,tests/isolation/results/linux-2026-10-12/README.md
+2026-10-12,isolation,Codex CLI 0.156.1 sandbox,fixtures passed,22,22,isolation suite as hashed in SHA256SUMS,tests/isolation/results/linux-2026-10-12/README.md
+2026-10-12,plan-challenge,plan-challenge skill 10d5a0de,runs passed,11,11,cases 01-10 at b9febe07; fresh Codex subagent per run,tests/skills/plan-challenge/results/2026-10-12.md
+2026-10-12,plan-challenge,plan-challenge skill af1c304f (sha256),runs passed,1,1,case 11 as hashed; fresh Codex subagent,tests/skills/plan-challenge/results/2026-10-12-unintended-shape.md
+2026-10-14,duplication-tools,PMD CPD 7.28.0 on F1 (copy),longest match tokens,581,,ids and literals ignored; fixtures as hashed,tests/duplication-tools/results/linux-2026-10-14/README.md
+2026-10-14,duplication-tools,PMD CPD 7.28.0 on F2 (copy),longest match tokens,245,,ids and literals ignored; fixtures as hashed,tests/duplication-tools/results/linux-2026-10-14/README.md
+2026-10-14,duplication-tools,PMD CPD 7.28.0 on F3 (convention),longest match tokens,68,,ids and literals ignored; fixtures as hashed,tests/duplication-tools/results/linux-2026-10-14/README.md
+2026-10-14,duplication-tools,PMD CPD 7.28.0 on F4 (class open),longest match tokens,85,,ids and literals ignored; fixtures as hashed,tests/duplication-tools/results/linux-2026-10-14-f4-f6/README.md
+2026-10-14,duplication-tools,PMD CPD 7.28.0 on F5 (copy),longest match tokens,86,,ids and literals ignored; fixtures as hashed,tests/duplication-tools/results/linux-2026-10-14-f4-f6/README.md
+2026-10-14,duplication-tools,PMD CPD 7.28.0 on F6 (convention),longest match tokens,78,,ids and literals ignored; fixtures as hashed,tests/duplication-tools/results/linux-2026-10-14-f4-f6/README.md
