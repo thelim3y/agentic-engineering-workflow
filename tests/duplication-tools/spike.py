@@ -15,7 +15,8 @@ import xml.etree.ElementTree as ET
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIXTURES = os.path.join(HERE, "fixtures")
-CASES = {"f1": "terrain_pass.cpp", "f2": "terrain_pass.cpp", "f3": "tonemap_pass.cpp"}
+CASES = {"f1": "terrain_pass.cpp", "f2": "terrain_pass.cpp", "f3": "tonemap_pass.cpp",
+         "f4": "outline_pass.cpp", "f5": "water_pass.cpp", "f6": "sky_pass.cpp"}
 TOKENS = [20, 30, 40, 50, 60, 65, 70, 75, 100, 150, 200, 245, 250, 300]
 NORMALISE = ["--ignore-identifiers", "--ignore-literals"]
 CPD_MODES = {"exact": [], "ids-literals": NORMALISE}

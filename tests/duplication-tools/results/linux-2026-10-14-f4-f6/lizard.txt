@@ -1,0 +1,6 @@
+f1: 3 duplicate blocks involving terrain_pass.cpp
+f2: 0 duplicate blocks involving terrain_pass.cpp
+f3: 0 duplicate blocks involving tonemap_pass.cpp
+f4: 0 duplicate blocks involving outline_pass.cpp
+f5: 0 duplicate blocks involving water_pass.cpp
+f6: 0 duplicate blocks involving sky_pass.cpp
