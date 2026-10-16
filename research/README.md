@@ -10,6 +10,7 @@ State of the art in agentic software engineering, from primary sources, searched
 | [academic-literature.md](academic-literature.md) | Multi-agent frameworks, test-driven and self-verifying agents, reward hacking, memory, planning, benchmarks, surveys. |
 | [code-quality-evidence.md](code-quality-evidence.md) | Empirical studies of duplication, churn, productivity, AI review, and C++ or engine code. |
 | [trust-and-governance.md](trust-and-governance.md) | Sandboxing, permissions, audit, deterministic control, prompt injection, multi-agent coordination. |
+| [orchestrator-fork-candidates.md](orchestrator-fork-candidates.md) | Archon and OpenAI Symphony, read in source: hard gates, hidden tests, merge gate, and whether to fork either. |
 
 ## Findings against the known failures
 
@@ -108,6 +109,16 @@ against their primary sources, and all matched:
 - CVE-2026-25725 in the NVD.
 - OpenSpec's `archive.ts` validation behaviour, read in source.
 - Codex sandbox modes and approval policies, in OpenAI's documentation.
+
+[orchestrator-fork-candidates.md](orchestrator-fork-candidates.md) was written
+separately on 15 October 2026 by one agent reading source at pinned commits. These
+claims were then re-checked in that source, and all matched:
+
+- Archon's Claude provider sets `bypassPermissions` unconditionally; no other file
+  under `packages/` except its test sets it.
+- Archon scrubs GitHub tokens only for runs a specific user starts in per-user mode,
+  not for server, CLI or solo runs.
+- Symphony's `github_api` tool allows PUT on any path starting with `/`.
 
 Other claims rest on the agents' own fetches. "Not found" means not found in this
 search, not shown to be absent.
